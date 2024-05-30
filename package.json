@@ -10,8 +10,11 @@
     "format": "eslint --fix --config ./eslint.config.js react"
   },
   "dependencies": {
+    "nativewind": "^4.0.36",
     "react": "18.2.0",
-    "react-native": "0.74.1"
+    "react-native": "0.74.1",
+    "react-native-reanimated": "^3.11.0",
+    "tailwindcss": "3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
