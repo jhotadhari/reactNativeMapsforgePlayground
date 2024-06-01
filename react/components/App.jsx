@@ -23,6 +23,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import '../../global.css';
+import { MyView } from './MyView.jsx';
 
 const Section = ( {
 	children,
@@ -57,6 +58,12 @@ const App = () => {
 			>
 				<Header />
 				<View className="bg-white dark:bg-black">
+					<Section title="Native Component">
+						<MyView />
+
+					</Section>
+
+					{/*
 					<Section title="Step One">
 						Edit <Text className="font-bold">react/components/App.jsx</Text> to change this
 						screen and then come back to see your edits.
@@ -71,6 +78,7 @@ const App = () => {
 						Read the docs to discover what to do next:
 					</Section>
 					<LearnMoreLinks />
+					 */}
 				</View>
 			</ScrollView>
 		</SafeAreaView>
