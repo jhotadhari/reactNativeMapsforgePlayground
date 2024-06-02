@@ -38,7 +38,7 @@ export const MyView = () => {
 		<MyViewManager
 			style={ {
 				// converts dpi to px, provide desired height
-				height: PixelRatio.getPixelSizeForLayoutSize( 200 ),
+				height: PixelRatio.getPixelSizeForLayoutSize( 650 ),	// ???
 				// converts dpi to px, provide desired width
 				width: PixelRatio.getPixelSizeForLayoutSize( width ),
 			} }

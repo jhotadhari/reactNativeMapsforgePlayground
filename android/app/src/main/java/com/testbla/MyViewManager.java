@@ -13,15 +13,11 @@ import androidx.fragment.app.FragmentActivity;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 
 import java.util.Map;
-
-
-import com.testbla.MyFragment;
 
 public class MyViewManager extends ViewGroupManager<FrameLayout> {
 
@@ -97,11 +93,11 @@ public class MyViewManager extends ViewGroupManager<FrameLayout> {
     ViewGroup parentView = (ViewGroup) root.findViewById(reactNativeViewId);
     setupLayout(parentView);
 
-    final MyFragment myFragment = new MyFragment();
+    final MapFragment mapFragment = new MapFragment();
     FragmentActivity activity = (FragmentActivity) reactContext.getCurrentActivity();
     activity.getSupportFragmentManager()
             .beginTransaction()
-            .replace(reactNativeViewId, myFragment, String.valueOf(reactNativeViewId))
+            .replace(reactNativeViewId, mapFragment, String.valueOf(reactNativeViewId))
             .commit();
   }
 

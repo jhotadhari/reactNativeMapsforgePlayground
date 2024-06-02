@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	SafeAreaView,
 	ScrollView,
@@ -44,6 +44,7 @@ const Section = ( {
 const App = () => {
 	const isDarkMode = useColorScheme() === 'dark';
 
+
 	const backgroundStyle = 'bg-neutral-300 dark:bg-slate-900';
 
 	return (
@@ -52,35 +53,19 @@ const App = () => {
 				barStyle={ isDarkMode ? 'light-content' : 'dark-content' }
 				backgroundColor={ backgroundStyle.backgroundColor }
 			/>
-			<ScrollView
+			{/* <ScrollView
 				contentInsetAdjustmentBehavior="automatic"
 				className={ backgroundStyle }
-			>
+			> */}
 				<Header />
 				<View className="bg-white dark:bg-black">
 					<Section title="Native Component">
+
 						<MyView />
-
 					</Section>
 
-					{/*
-					<Section title="Step One">
-						Edit <Text className="font-bold">react/components/App.jsx</Text> to change this
-						screen and then come back to see your edits.
-					</Section>
-					<Section title="See Your Changes">
-						<ReloadInstructions />
-					</Section>
-					<Section title="Debug">
-						<DebugInstructions />
-					</Section>
-					<Section title="Learn More">
-						Read the docs to discover what to do next:
-					</Section>
-					<LearnMoreLinks />
-					 */}
 				</View>
-			</ScrollView>
+			{/* </ScrollView> */}
 		</SafeAreaView>
 	);
 };
