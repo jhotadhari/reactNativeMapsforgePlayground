@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,9 +101,9 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected void createControls()
     {
-//        initializePosition(mapView.getModel().mapViewPosition);
-//        mapView.setCenter(DEFAULT_LOCATION);
-//        mapView.setZoomLevel((byte) CURRENTZOOM);
+        initializePosition((MapViewPosition) mapView.getModel().mapViewPosition);
+        mapView.setCenter(DEFAULT_LOCATION);
+        mapView.setZoomLevel((byte) CURRENTZOOM);
     }
 
     /**
@@ -154,6 +155,10 @@ public abstract class MapFragmentTemplate extends Fragment
         mapView.setZoomLevelMax((byte) MAXZOOM);
         mapView.setZoomLevel((byte) CURRENTZOOM);
         mapView.setCenter(new LatLong(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude));
+
+
+        Log.d("BLA", String.valueOf(mapView.getHeight()));
+
     }
 
     /**
