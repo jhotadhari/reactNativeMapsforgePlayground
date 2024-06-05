@@ -25,14 +25,21 @@ const Marker = ( {
 			setInitialized( false );
 			setTimeout( () => {	// ??? the mapView has to be initiated by java. TODO: replace setTimeout with event listener that mapView is ready.
 				MapMarkerModule.createMarker( mapViewManager._nativeTag, latLong ).then( res => {
-					setInitialized( true );
+					if ( res ) {
+						setInitialized( true );
+					}
 				} );
 			}, 100 );
 		}
-		// TODO return remove marker
+		return () => {
+			if ( initialized && mapViewManager && mapViewManager._nativeTag ) {
+				MapMarkerModule.removeMarker( mapViewManager._nativeTag );
+			}
+		};
 	}, [
 		mapViewManager && mapViewManager._nativeTag,
-		mapViewManager?._nativeTag
+		mapViewManager?._nativeTag,
+		initialized,
 	] );
 
 	return null;

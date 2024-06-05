@@ -5,8 +5,9 @@
  * @format
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
+	Button,
 	SafeAreaView,
 	StatusBar,
 	Text,
@@ -43,6 +44,8 @@ const App = () => {
 
 	const backgroundStyle = 'bg-neutral-300 dark:bg-slate-900';
 
+	const [showMarkers,setShowMarkers] = useState( true );
+
 	return (
 		<SafeAreaView className={ backgroundStyle }>
 			<StatusBar
@@ -54,17 +57,27 @@ const App = () => {
 				<View className="bg-white dark:bg-black">
 					<Section title="Native Component">
 
+
+					<Button
+						onPress={ () => {
+							setShowMarkers( ! showMarkers );
+						} }
+						title="Toggle Markers"
+						color="#841584"
+						// accessibilityLabel="Learn more about this purple button"
+					/>
+
 						<MapContainer>
-							<Marker
+							{ showMarkers && <Marker
 								latLong={ [52.5, 13.4] }
-							/>
+							/> }
 						</MapContainer>
 
 
 						<MapContainer>
-							<Marker
+							{ showMarkers && <Marker
 								latLong={ [52.51, 13.42] }
-							/>
+							/> }
 						</MapContainer>
 
 						{ Object.keys( Array.from( Array( 5 ) ) ).map( ( v, index ) => {
