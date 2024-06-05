@@ -19,16 +19,16 @@ import com.facebook.react.uimanager.ThemedReactContext;
 
 import java.util.Map;
 
-public class MyViewManager extends ViewGroupManager<FrameLayout> {
+public class MapViewManager extends ViewGroupManager<FrameLayout> {
 
-  public static final String REACT_CLASS = "MyViewManager";
+  public static final String REACT_CLASS = "MapViewManager";
   public final int COMMAND_CREATE = 1;
   private int propWidth;
   private int propHeight;
 
   ReactApplicationContext reactContext;
 
-  public MyViewManager(ReactApplicationContext reactContext) {
+  public MapViewManager(ReactApplicationContext reactContext) {
     this.reactContext = reactContext;
   }
 

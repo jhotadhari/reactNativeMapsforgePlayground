@@ -14,13 +14,12 @@ import {
 	View,
 } from 'react-native';
 
-
 import '../../global.css';
 
 import {
-	MyView,
+	MapContainer,
 	Marker,
-} from './MyView.jsx';
+} from './mapComponents';
 
 const Section = ( {
 	children,
@@ -55,18 +54,18 @@ const App = () => {
 				<View className="bg-white dark:bg-black">
 					<Section title="Native Component">
 
-						<MyView>
+						<MapContainer>
 							<Marker
 								latLong={ [52.5, 13.4] }
 							/>
-						</MyView>
+						</MapContainer>
 
 
-						<MyView>
+						<MapContainer>
 							<Marker
 								latLong={ [52.51, 13.42] }
 							/>
-						</MyView>
+						</MapContainer>
 
 						{ Object.keys( Array.from( Array( 5 ) ) ).map( ( v, index ) => {
 							return <Text key={ index } className="mt-2 text-lg text-black dark:text-white">

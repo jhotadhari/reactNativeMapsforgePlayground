@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.testbla.MyViewManager;
-
-public class MyPackage implements ReactPackage {
+public class MapPackage implements ReactPackage {
 
    @Override
    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
        return Arrays.<ViewManager>asList(
-            new MyViewManager(reactContext)
+            new MapViewManager(reactContext)
        );
    }
 

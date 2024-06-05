@@ -1,7 +1,6 @@
 import React, {
 	useEffect,
 	useRef,
-	isValidElement,
 	useState,
 	useContext,
 } from 'react';
@@ -12,59 +11,25 @@ import {
 	useWindowDimensions,
 	ScrollView,
 	NativeModules,
-	View,
-	Text,
 } from 'react-native';
 
-import { MyViewManager } from './MyViewManager.jsx';
-import { MapContext } from '../MapContext.js';
-
-const { MapMarkerModule } = NativeModules;
-
+import { MapViewManager } from './MapViewManager.jsx';
+import { MapContext } from '../../MapContext.js';
 
 const createFragment = viewId =>
 	UIManager.dispatchViewManagerCommand(
 		viewId,
 		// we are calling the 'create' command
-		UIManager.MyViewManager.Commands.create.toString(),
+		UIManager.MapViewManager.Commands.create.toString(),
 		[viewId],
 	);
-
-
-
-const Marker = ( {
-	latLong,
-} ) => {
-
-	const {
-		myViewManager,
-	} = useContext( MapContext );
-	const [initialized,setInitialized] = useState( null );
-
-	useEffect( () => {
-		if ( null === initialized && myViewManager && myViewManager._nativeTag ) {
-			setInitialized( false );
-			setTimeout( () => {	// ??? the mapView has to be initiated by java. TODO: replace setTimeout with event listener that mapView is ready.
-				MapMarkerModule.createMarker( myViewManager._nativeTag, latLong ).then( res => {
-					setInitialized( true );
-				} );
-			}, 100 );
-		}
-		// TODO return remove marker
-	}, [
-		myViewManager && myViewManager._nativeTag,
-		myViewManager?._nativeTag
-	] );
-
-	return null;
-};
 
 const useDefaultWidth = propsWidth => {
 	const { width } = useWindowDimensions();
 	return propsWidth || width;
 };
 
-const MyView = ( {
+const MapContainer = ( {
 	children,
 	width,
 	height,
@@ -87,11 +52,11 @@ const MyView = ( {
 	}, [viewId] );
 
 	return <MapContext.Provider value={ {
-		myViewManager: ref?.current,
+		mapViewManager: ref?.current,
 	} }>
 		{/* Wrap into non scrollable ScrollView to fix top positioning */}
 		<ScrollView scrollEnabled={ false }>
-			<MyViewManager
+			<MapViewManager
 				ref={ ref }
 				height={ PixelRatio.getPixelSizeForLayoutSize( 200 ) }
 				width={ PixelRatio.getPixelSizeForLayoutSize( width ) }
@@ -101,7 +66,4 @@ const MyView = ( {
 	</MapContext.Provider>;
 };
 
-export {
-	MyView,
-	Marker,
-};
+export default MapContainer;

@@ -4,10 +4,10 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-export const MyViewManager = requireNativeComponent(
-	'MyViewManager',
+export const MapViewManager = requireNativeComponent(
+	'MapViewManager',
 	{
-		name: 'MyViewManager',
+		name: 'MapViewManager',
 		propTypes: {
 			width: PropTypes.number,
 			height: PropTypes.number,
