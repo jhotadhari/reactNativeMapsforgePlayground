@@ -19,6 +19,7 @@ import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
@@ -28,6 +29,10 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
  * It also demonstrates the use simplified cleanup operation at activity exit.
  */
 public class MapFragment extends MapFragmentTemplate {
+
+    public MapView getMapView() {
+        return mapView;
+    }
 
     /**
      * This MapViewer uses the built-in default theme.

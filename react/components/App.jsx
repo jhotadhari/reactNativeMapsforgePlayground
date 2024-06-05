@@ -5,25 +5,22 @@
  * @format
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
 	SafeAreaView,
-	ScrollView,
 	StatusBar,
 	Text,
 	useColorScheme,
 	View,
 } from 'react-native';
 
-import {
-	DebugInstructions,
-	Header,
-	LearnMoreLinks,
-	ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 import '../../global.css';
-import { MyView } from './MyView.jsx';
+
+import {
+	MyView,
+	Marker,
+} from './MyView.jsx';
 
 const Section = ( {
 	children,
@@ -34,16 +31,16 @@ const Section = ( {
 			<Text className="text-2xl text-black dark:text-white">
 				{title}
 			</Text>
-			<Text className="mt-2 text-lg text-black dark:text-white">
+
+			<View>
 				{children}
-			</Text>
+			</View>
 		</View>
 	);
 };
 
 const App = () => {
 	const isDarkMode = useColorScheme() === 'dark';
-
 
 	const backgroundStyle = 'bg-neutral-300 dark:bg-slate-900';
 
@@ -53,19 +50,34 @@ const App = () => {
 				barStyle={ isDarkMode ? 'light-content' : 'dark-content' }
 				backgroundColor={ backgroundStyle.backgroundColor }
 			/>
-			{/* <ScrollView
-				contentInsetAdjustmentBehavior="automatic"
-				className={ backgroundStyle }
-			> */}
-				<Header />
+			<View className="bg-white dark:bg-black">
+
 				<View className="bg-white dark:bg-black">
 					<Section title="Native Component">
 
-						<MyView />
+						<MyView>
+							<Marker
+								latLong={ [52.5, 13.4] }
+							/>
+						</MyView>
+
+
+						<MyView>
+							<Marker
+								latLong={ [52.51, 13.42] }
+							/>
+						</MyView>
+
+						{ Object.keys( Array.from( Array( 5 ) ) ).map( ( v, index ) => {
+							return <Text key={ index } className="mt-2 text-lg text-black dark:text-white">
+								{ 'test' + index }
+							</Text>
+						} ) }
+
 					</Section>
 
 				</View>
-			{/* </ScrollView> */}
+			</View>
 		</SafeAreaView>
 	);
 };

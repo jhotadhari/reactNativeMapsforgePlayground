@@ -75,7 +75,7 @@ public class MyViewManager extends ViewGroupManager<FrameLayout> {
     }
   }
 
-  @ReactPropGroup(names = {"width", "height"}, customType = "Style")
+  @ReactPropGroup(names = {"width", "height"})
   public void setStyle(FrameLayout view, int index, Integer value) {
     if (index == 0) {
       propWidth = value;

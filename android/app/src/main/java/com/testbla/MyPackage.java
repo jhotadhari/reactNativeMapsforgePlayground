@@ -24,6 +24,7 @@ public class MyPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(
         ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
+        modules.add(new MapMarkerModule(reactContext));
         return modules;
     }
 

@@ -145,7 +145,7 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected void createMapViews(View v)
     {
-        mapView = getMapView(v);
+        mapView = initMapView(v);
         mapView.getModel().init(this.preferencesFacade);
         mapView.setClickable(true);
         mapView.getMapScaleBar().setVisible(true);
@@ -381,7 +381,7 @@ public abstract class MapFragmentTemplate extends Fragment
      *
      * @return the Android MapView for this activity.
      */
-    protected MapView getMapView(View v)
+    protected MapView initMapView(View v)
     {
         return (MapView) v.findViewById(getMapViewId());
     }
