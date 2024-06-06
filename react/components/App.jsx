@@ -12,6 +12,8 @@ import {
 	StatusBar,
 	Text,
 	useColorScheme,
+	useWindowDimensions,
+	PixelRatio,
 	View,
 } from 'react-native';
 
@@ -46,6 +48,10 @@ const App = () => {
 
 	const [showMarkers,setShowMarkers] = useState( true );
 
+
+	const { width, height } = useWindowDimensions();
+
+
 	return (
 		<SafeAreaView className={ backgroundStyle }>
 			<StatusBar
@@ -54,41 +60,50 @@ const App = () => {
 			/>
 			<View className="bg-white dark:bg-black">
 
-				<View className="bg-white dark:bg-black">
-					<Section title="Native Component">
+					{/* <View style={ {
+						width: PixelRatio.getPixelSizeForLayoutSize( width ),
+						height: PixelRatio.getPixelSizeForLayoutSize( 100 ),
+						backgroundColor: '#00ff00',
+					} } /> */}
 
 
-					<Button
-						onPress={ () => {
-							setShowMarkers( ! showMarkers );
-						} }
-						title="Toggle Markers"
-						color="#841584"
-						// accessibilityLabel="Learn more about this purple button"
-					/>
+					<MapContainer
+						height={ height }
+					>
+						{ showMarkers && <>
 
-						<MapContainer>
-							{ showMarkers && <Marker
-								latLong={ [52.5, 13.4] }
-							/> }
-						</MapContainer>
+							{ [
+								[52.5, 13.4],
+								[52.51, 13.42],
+								[52.53, 13.46],
+							].map( ( latLong, index ) => <Marker
+								latLong={ latLong }
+								key={ index }
+							/> ) }
 
 
-						<MapContainer>
-							{ showMarkers && <Marker
-								latLong={ [52.51, 13.42] }
-							/> }
-						</MapContainer>
 
-						{ Object.keys( Array.from( Array( 5 ) ) ).map( ( v, index ) => {
-							return <Text key={ index } className="mt-2 text-lg text-black dark:text-white">
-								{ 'test' + index }
-							</Text>
-						} ) }
+						</> }
+					</MapContainer>
 
-					</Section>
+					{ Object.keys( Array.from( Array( 5 ) ) ).map( ( v, index ) => {
+						return <Text key={ index } className="mt-2 text-lg text-black dark:text-white">
+							{ 'test' + index }
+						</Text>
+					} ) }
 
-				</View>
+
+			</View>
+
+			<View className="bg-white dark:bg-black absolute top left">
+				<Button
+					onPress={ () => {
+						setShowMarkers( ! showMarkers );
+					} }
+					title="Toggle Markers"
+					color="#841584"
+					// accessibilityLabel="Learn more about this purple button"
+				/>
 			</View>
 		</SafeAreaView>
 	);

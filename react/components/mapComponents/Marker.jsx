@@ -24,16 +24,17 @@ const Marker = ( {
 		if ( null === initialized && mapViewManager && mapViewManager._nativeTag ) {
 			setInitialized( false );
 			setTimeout( () => {	// ??? the mapView has to be initiated by java. TODO: replace setTimeout with event listener that mapView is ready.
-				MapMarkerModule.createMarker( mapViewManager._nativeTag, latLong ).then( res => {
-					if ( res ) {
-						setInitialized( true );
+				MapMarkerModule.createMarker( mapViewManager._nativeTag, latLong ).then( hash => {
+					if ( hash ) {
+						setInitialized( hash );
 					}
 				} );
 			}, 100 );
 		}
 		return () => {
 			if ( initialized && mapViewManager && mapViewManager._nativeTag ) {
-				MapMarkerModule.removeMarker( mapViewManager._nativeTag );
+
+				MapMarkerModule.removeMarker( mapViewManager._nativeTag, initialized );
 			}
 		};
 	}, [
