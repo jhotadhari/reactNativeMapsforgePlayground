@@ -6,10 +6,12 @@ import React, {
 import {
 	PixelRatio,
 	NativeModules,
+	NativeEventEmitter,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { MapContext } from '../../MapContext.js';
+import { MapContext } from '../../MapContext';
+import useMapLayersCreated from '../../compose/useMapLayersCreated';
 
 const { MapMarkerModule } = NativeModules;
 
@@ -34,16 +36,16 @@ const Marker = ( {
 
 	const [hash,setHash] = useState( null );
 
+	const mapLayersCreated = useMapLayersCreated( mapViewManager?._nativeTag );
+
 	useEffect( () => {
-		if ( null === hash && mapViewManager && mapViewManager._nativeTag ) {
+		if ( mapLayersCreated && null === hash && mapViewManager && mapViewManager._nativeTag ) {
 			setHash( false );
-			setTimeout( () => {	// ??? the mapView has to be initiated by java. TODO: replace setTimeout with event listener that mapView is ready.
-				MapMarkerModule.createMarker( mapViewManager._nativeTag, latLong, iconWithDefaults ).then( newHash => {
-					if ( newHash ) {
-						setHash( newHash );
-					}
-				} );
-			}, 100 );
+			MapMarkerModule.createMarker( mapViewManager._nativeTag, latLong, iconWithDefaults ).then( newHash => {
+				if ( newHash ) {
+					setHash( newHash );
+				}
+			} );
 		}
 		return () => {
 			if ( hash && mapViewManager && mapViewManager._nativeTag ) {
@@ -52,6 +54,7 @@ const Marker = ( {
 			}
 		};
 	}, [
+		mapLayersCreated,
 		mapViewManager && mapViewManager._nativeTag,
 		mapViewManager?._nativeTag,
 		hash,

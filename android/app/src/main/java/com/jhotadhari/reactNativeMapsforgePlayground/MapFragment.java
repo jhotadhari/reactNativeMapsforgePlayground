@@ -15,16 +15,24 @@
  */
 package com.jhotadhari.reactNativeMapsforgePlayground;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The simplest form of creating a map viewer based on the MapViewerTemplate.
@@ -32,8 +40,8 @@ import java.util.ArrayList;
  */
 public class MapFragment extends MapFragmentTemplate {
 
-    MapFragment( ArrayList center, int zoom, int minZoom, int maxZoom  ) {
-        super( center, zoom, minZoom, maxZoom );
+    MapFragment( ReactContext reactContext, ArrayList center, int zoom, int minZoom, int maxZoom  ) {
+        super( reactContext, center, zoom, minZoom, maxZoom );
     }
     public MapView getMapView() {
         return mapView;
@@ -85,12 +93,10 @@ public class MapFragment extends MapFragmentTemplate {
         TileRendererLayer tileRendererLayer = AndroidUtil.createTileRendererLayer(this.tileCaches.get(0),
                 this.mapView.getModel().mapViewPosition, getMapFile(), getRenderTheme(), false, true, false);
         this.mapView.getLayerManager().getLayers().add(tileRendererLayer);
+        WritableMap params = new WritableNativeMap();
+        params.putInt( "nativeTag", this.getId() );
+        sendEvent( reactContext, "MapLayersCreated", params );
     }
-//
-//    @Override
-//    protected void createMapViews() {
-//        super.createMapViews();
-//    }
 
     /**
      * Creates the tile cache with the AndroidUtil helper

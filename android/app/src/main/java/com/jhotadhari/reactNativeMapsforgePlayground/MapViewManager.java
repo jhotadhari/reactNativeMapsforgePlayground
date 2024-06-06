@@ -117,7 +117,7 @@ public class MapViewManager extends ViewGroupManager<FrameLayout> {
     ViewGroup parentView = (ViewGroup) root.findViewById(reactNativeViewId);
     setupLayout(parentView);
 
-    final MapFragment mapFragment = new MapFragment( propCenter, propZoom, propMinZoom, propMaxZoom );
+    final MapFragment mapFragment = new MapFragment( reactContext, propCenter, propZoom, propMinZoom, propMaxZoom );
     FragmentActivity activity = (FragmentActivity) reactContext.getCurrentActivity();
     activity.getSupportFragmentManager()
             .beginTransaction()

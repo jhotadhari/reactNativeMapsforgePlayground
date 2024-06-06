@@ -1,5 +1,6 @@
 package com.jhotadhari.reactNativeMapsforgePlayground;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
@@ -40,6 +45,8 @@ public abstract class MapFragmentTemplate extends Fragment
     protected MapView mapView;
     protected PreferencesFacade preferencesFacade;
     protected List<TileCache> tileCaches = new ArrayList<TileCache>();
+
+    protected ReactContext reactContext;
 
     // Initial variables for controlling the map
     private static int propZoom = 12;
@@ -91,8 +98,10 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected abstract void createTileCaches();
 
-    MapFragmentTemplate( ArrayList center, int zoom, int minZoom, int maxZoom ) {
+    MapFragmentTemplate( ReactContext reactContext_, ArrayList center, int zoom, int minZoom, int maxZoom ) {
         super();
+
+        reactContext = reactContext_;
 
         propCenterLatLong = new LatLong(
             (double) center.get(0),
@@ -116,6 +125,12 @@ public abstract class MapFragmentTemplate extends Fragment
         initializePosition((MapViewPosition) mapView.getModel().mapViewPosition);
         mapView.setCenter(propCenterLatLong);
         mapView.setZoomLevel((byte) propZoom);
+    }
+
+    protected void sendEvent( ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+        reactContext.getJSModule(
+            DeviceEventManagerModule.RCTDeviceEventEmitter.class
+        ).emit( eventName, params );
     }
 
     /**
