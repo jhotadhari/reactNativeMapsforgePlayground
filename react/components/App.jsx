@@ -46,10 +46,13 @@ const App = () => {
 	const backgroundStyle = 'bg-neutral-300 dark:bg-slate-900';
 
 	const [showMarkers,setShowMarkers] = useState( true );
-
+	const [locations,setLocations] = useState( [
+		[52.5, 13.4],
+		[52.51, 13.42],
+		[52.53, 13.46],
+	] );
 
 	const { width, height } = useWindowDimensions();
-
 
 	return (
 		<SafeAreaView className={ backgroundStyle }>
@@ -71,11 +74,7 @@ const App = () => {
 					>
 						{ showMarkers && <>
 
-							{ [
-								[52.5, 13.4],
-								[52.51, 13.42],
-								[52.53, 13.46],
-							].map( ( latLong, index ) => <Marker
+							{ [...locations].map( ( latLong, index ) => <Marker
 								latLong={ latLong }
 								key={ index }
 							/> ) }
@@ -94,14 +93,19 @@ const App = () => {
 
 			</View>
 
-			<View className="bg-white dark:bg-black absolute top left">
+			<View className="bg-white dark:bg-black absolute top left flex flex-row justify-around w-full">
 				<Button
 					onPress={ () => {
 						setShowMarkers( ! showMarkers );
 					} }
 					title="Toggle Markers"
-					color="#841584"
-					// accessibilityLabel="Learn more about this purple button"
+				/>
+				<Button
+					onPress={ () => {
+						const newLocations = [...locations].map( coords => [...coords].map( coord => Math.random() > 0.5 ? coord + 0.01 : coord - 0.01 ) );
+						setLocations( newLocations );
+					} }
+					title="random locations"
 				/>
 			</View>
 		</SafeAreaView>

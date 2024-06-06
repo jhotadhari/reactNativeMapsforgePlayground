@@ -70,6 +70,23 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
             promise.reject("Create Event Error", e);
         }
     }
+
+    @ReactMethod
+    public void setMarkerLocation( int reactTag, int hash, ReadableArray latLong, Promise promise ) {
+        try {
+            MapView mapView = (MapView) getMapView( reactTag );
+            Marker marker = markers.get( hash );
+            marker.setLatLong( new LatLong(
+                (Double) latLong.toArrayList().get(0),
+                (Double) latLong.toArrayList().get(1)
+            ) );
+            marker.requestRedraw();
+            promise.resolve(hash);
+        } catch(Exception e) {
+            promise.reject("Create Event Error", e);
+        }
+    }
+
     @ReactMethod
     public void removeMarker(int reactTag, int hash, Promise promise) {
         try {

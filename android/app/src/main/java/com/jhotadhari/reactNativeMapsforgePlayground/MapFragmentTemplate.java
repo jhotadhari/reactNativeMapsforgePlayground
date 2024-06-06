@@ -155,10 +155,6 @@ public abstract class MapFragmentTemplate extends Fragment
         mapView.setZoomLevelMax((byte) MAXZOOM);
         mapView.setZoomLevel((byte) CURRENTZOOM);
         mapView.setCenter(new LatLong(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude));
-
-
-        Log.d("BLA", String.valueOf(mapView.getHeight()));
-
     }
 
     /**
