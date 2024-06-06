@@ -1,5 +1,5 @@
 // replace with your package
-package com.testbla;
+package com.jhotadhari.reactNativeMapsforgePlayground;
 
 import android.view.Choreographer;
 import android.view.View;

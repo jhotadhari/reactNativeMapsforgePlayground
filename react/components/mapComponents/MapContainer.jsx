@@ -32,7 +32,7 @@ const useDefaultWidth = propsWidth => {
 const MapContainer = ( {
 	children,
 	width,
-	height,
+	// height,
 } ) => {
 
 	const ref = useRef( null );
@@ -40,6 +40,8 @@ const MapContainer = ( {
 	const [viewId,setViewId] = useState( null );
 
 	width = useDefaultWidth( width );
+
+	let { height } = useWindowDimensions();
 	height = height || 200;
 
 	useEffect( () => {
@@ -58,7 +60,7 @@ const MapContainer = ( {
 		<ScrollView scrollEnabled={ false }>
 			<MapViewManager
 				ref={ ref }
-				height={ PixelRatio.getPixelSizeForLayoutSize( 200 ) }
+				height={ PixelRatio.getPixelSizeForLayoutSize( height ) }
 				width={ PixelRatio.getPixelSizeForLayoutSize( width ) }
 			/>
 			{ children }

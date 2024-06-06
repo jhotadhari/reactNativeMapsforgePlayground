@@ -13,7 +13,6 @@ import {
 	Text,
 	useColorScheme,
 	useWindowDimensions,
-	PixelRatio,
 	View,
 } from 'react-native';
 
@@ -24,22 +23,22 @@ import {
 	Marker,
 } from './mapComponents';
 
-const Section = ( {
-	children,
-	title,
-} ) => {
-	return (
-		<View className="mt-8 px-2">
-			<Text className="text-2xl text-black dark:text-white">
-				{title}
-			</Text>
+// const Section = ( {
+// 	children,
+// 	title,
+// } ) => {
+// 	return (
+// 		<View className="mt-8 px-2">
+// 			<Text className="text-2xl text-black dark:text-white">
+// 				{title}
+// 			</Text>
 
-			<View>
-				{children}
-			</View>
-		</View>
-	);
-};
+// 			<View>
+// 				{children}
+// 			</View>
+// 		</View>
+// 	);
+// };
 
 const App = () => {
 	const isDarkMode = useColorScheme() === 'dark';

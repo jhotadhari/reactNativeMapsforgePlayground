@@ -1,4 +1,4 @@
-package com.testbla;
+package com.jhotadhari.reactNativeMapsforgePlayground;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.ReactPackage;

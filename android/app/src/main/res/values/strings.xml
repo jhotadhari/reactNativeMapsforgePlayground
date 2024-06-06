@@ -2,7 +2,7 @@
 <resources>
 
 
-    <string name="app_name">testbla</string>
+    <string name="app_name">reactNativeMapsforgePlayground</string>
 
     <string name="copyright_osm">Map data © OpenStreetMap contributors</string>
 

@@ -1,4 +1,4 @@
-package com.testbla
+package com.jhotadhari.reactNativeMapsforgePlayground
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,4 +1,4 @@
-package com.testbla;
+package com.jhotadhari.reactNativeMapsforgePlayground;
 
 import androidx.fragment.app.Fragment;
 import android.content.Context;

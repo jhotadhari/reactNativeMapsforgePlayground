@@ -1,4 +1,4 @@
-package com.testbla;
+package com.jhotadhari.reactNativeMapsforgePlayground;
 
 import android.content.Context;
 import android.graphics.Color;
