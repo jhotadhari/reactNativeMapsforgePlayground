@@ -24,12 +24,17 @@ import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
+import java.util.ArrayList;
+
 /**
  * The simplest form of creating a map viewer based on the MapViewerTemplate.
  * It also demonstrates the use simplified cleanup operation at activity exit.
  */
 public class MapFragment extends MapFragmentTemplate {
 
+    MapFragment( ArrayList center, int zoom, int minZoom, int maxZoom  ) {
+        super( center, zoom, minZoom, maxZoom );
+    }
     public MapView getMapView() {
         return mapView;
     }

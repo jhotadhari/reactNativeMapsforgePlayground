@@ -31,8 +31,12 @@ const useDefaultWidth = propsWidth => {
 
 const MapContainer = ( {
 	children,
-	width,
-	// height,
+	width,		// ??? TODO doesn't react on prop change
+	height,		// ??? TODO doesn't react on prop change
+	center,		// ??? TODO doesn't react on prop change
+	zoom,		// ??? TODO doesn't react on prop change
+	minZoom,	// ??? TODO doesn't react on prop change
+	maxZoom,	// ??? TODO doesn't react on prop change
 } ) => {
 
 	const ref = useRef( null );
@@ -40,9 +44,11 @@ const MapContainer = ( {
 	const [viewId,setViewId] = useState( null );
 
 	width = useDefaultWidth( width );
-
-	let { height } = useWindowDimensions();
 	height = height || 200;
+	center = center && Array.isArray( center ) && center.length === 2 ? center : [52.5, 13.4];
+	zoom = zoom || 12;
+	minZoom = minZoom || 3;
+	maxZoom = maxZoom || 50;
 
 	useEffect( () => {
 		setViewId( findNodeHandle( ref.current ) );
@@ -60,8 +66,12 @@ const MapContainer = ( {
 		<ScrollView scrollEnabled={ false }>
 			<MapViewManager
 				ref={ ref }
-				height={ PixelRatio.getPixelSizeForLayoutSize( height ) }
 				width={ PixelRatio.getPixelSizeForLayoutSize( width ) }
+				height={ PixelRatio.getPixelSizeForLayoutSize( height ) }
+				center={ center }
+				zoom={ zoom }
+				minZoom={ minZoom }
+				maxZoom={ maxZoom }
 			/>
 			{ children }
 		</ScrollView>

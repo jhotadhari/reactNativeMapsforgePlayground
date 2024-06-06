@@ -13,10 +13,12 @@ import androidx.fragment.app.FragmentActivity;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class MapViewManager extends ViewGroupManager<FrameLayout> {
@@ -25,6 +27,11 @@ public class MapViewManager extends ViewGroupManager<FrameLayout> {
   public final int COMMAND_CREATE = 1;
   private int propWidth;
   private int propHeight;
+
+  private int propZoom;
+  private int propMinZoom;
+  private int propMaxZoom;
+  private ArrayList propCenter;
 
   ReactApplicationContext reactContext;
 
@@ -76,14 +83,31 @@ public class MapViewManager extends ViewGroupManager<FrameLayout> {
   }
 
   @ReactPropGroup(names = {"width", "height"})
-  public void setStyle(FrameLayout view, int index, Integer value) {
+  public void setReactPropsStyle(FrameLayout view, int index, Integer value) {
     if (index == 0) {
       propWidth = value;
     }
-
     if (index == 1) {
       propHeight = value;
     }
+  }
+
+  @ReactPropGroup(names = {"zoom", "minZoom","maxZoom"})
+  public void setReactPropsZoom(FrameLayout view, int index, Integer value) {
+    if (index == 0) {
+      propZoom = value;
+    }
+    if (index == 1) {
+      propMinZoom = value;
+    }
+    if (index == 2) {
+      propMaxZoom = value;
+    }
+  }
+
+  @ReactProp(name="center")
+  public void setReactPropCenter(FrameLayout view, ReadableArray value) {
+    propCenter = value.toArrayList();
   }
 
   /**
@@ -93,7 +117,7 @@ public class MapViewManager extends ViewGroupManager<FrameLayout> {
     ViewGroup parentView = (ViewGroup) root.findViewById(reactNativeViewId);
     setupLayout(parentView);
 
-    final MapFragment mapFragment = new MapFragment();
+    final MapFragment mapFragment = new MapFragment( propCenter, propZoom, propMinZoom, propMaxZoom );
     FragmentActivity activity = (FragmentActivity) reactContext.getCurrentActivity();
     activity.getSupportFragmentManager()
             .beginTransaction()

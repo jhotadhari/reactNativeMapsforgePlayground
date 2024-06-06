@@ -11,7 +11,10 @@ export const MapViewManager = requireNativeComponent(
 		propTypes: {
 			width: PropTypes.number,
 			height: PropTypes.number,
-			markers: PropTypes.array,
+			center: PropTypes.array,	// ??? should better validate
+			zoom: PropTypes.number,
+			minZoom: PropTypes.number,
+			maxZoom: PropTypes.number,
 			...ViewPropTypes,
 		},
 	}

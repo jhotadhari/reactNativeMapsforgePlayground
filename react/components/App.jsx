@@ -62,24 +62,24 @@ const App = () => {
 		// '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_white.png',
 
 		{
-			width: PixelRatio.getPixelSizeForLayoutSize( 70 ),
-			height: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+			// width: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+			// height: PixelRatio.getPixelSizeForLayoutSize( 70 ),
 		},
 
 		{
 			path: '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_green.png',
-			width: PixelRatio.getPixelSizeForLayoutSize( 50 ),
-			height: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+			width: PixelRatio.getPixelSizeForLayoutSize( 40 ),
+			height: PixelRatio.getPixelSizeForLayoutSize( 60 ),
 			anchor: [
 				0,
-				- PixelRatio.getPixelSizeForLayoutSize( 70 ) / 2,
+				- PixelRatio.getPixelSizeForLayoutSize( 60 ) / 2,
 			],
 		}
 
 
 	];
 
-	const { width, height } = useWindowDimensions();
+	const { height } = useWindowDimensions();
 
 	return (
 		<SafeAreaView className={ backgroundStyle }>
@@ -98,6 +98,10 @@ const App = () => {
 
 					<MapContainer
 						height={ height }
+						// center={ [52, 13] }
+						zoom={ 18 }
+						minZoom={ 12 }
+						maxZoom={ 18 }
 					>
 						{ showMarkers && <>
 

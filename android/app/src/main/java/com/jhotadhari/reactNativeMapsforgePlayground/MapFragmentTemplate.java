@@ -41,12 +41,11 @@ public abstract class MapFragmentTemplate extends Fragment
     protected PreferencesFacade preferencesFacade;
     protected List<TileCache> tileCaches = new ArrayList<TileCache>();
 
-    // Constant variables for controlling the map
-    private final static int MINZOOM = 5;
-    private final static int MAXZOOM = 23;
-    private final static int CURRENTZOOM = 12;
-
-    final LatLong DEFAULT_LOCATION = new LatLong(52.517037, 13.38886);
+    // Initial variables for controlling the map
+    private static int propZoom = 12;
+    private static int propMinZoom = 3;
+    private static int propMaxZoom = 50;
+    private LatLong propCenterLatLong;
 
     /*
      * Abstract methods that must be implemented:
@@ -92,6 +91,19 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected abstract void createTileCaches();
 
+    MapFragmentTemplate( ArrayList center, int zoom, int minZoom, int maxZoom ) {
+        super();
+
+        propCenterLatLong = new LatLong(
+            (double) center.get(0),
+            (double) center.get(1)
+        );
+        propZoom = zoom;
+        propMinZoom = minZoom;
+        propMaxZoom = maxZoom;
+
+    }
+
     /*
         Methods for this class
      */
@@ -102,8 +114,8 @@ public abstract class MapFragmentTemplate extends Fragment
     protected void createControls()
     {
         initializePosition((MapViewPosition) mapView.getModel().mapViewPosition);
-        mapView.setCenter(DEFAULT_LOCATION);
-        mapView.setZoomLevel((byte) CURRENTZOOM);
+        mapView.setCenter(propCenterLatLong);
+        mapView.setZoomLevel((byte) propZoom);
     }
 
     /**
@@ -122,7 +134,7 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected byte getZoomLevelDefault()
     {
-        return (byte) CURRENTZOOM;
+        return (byte) propZoom;
     }
 
     /**
@@ -130,7 +142,7 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected byte getZoomLevelMin()
     {
-        return (byte) MINZOOM;
+        return (byte) propMinZoom;
     }
 
     /**
@@ -138,7 +150,7 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected byte getZoomLevelMax()
     {
-        return (byte) MAXZOOM;
+        return (byte) propMaxZoom;
     }
 
     /**
@@ -151,10 +163,10 @@ public abstract class MapFragmentTemplate extends Fragment
         mapView.setClickable(true);
         mapView.getMapScaleBar().setVisible(true);
         mapView.setBuiltInZoomControls(false);
-        mapView.setZoomLevelMin((byte) MINZOOM);
-        mapView.setZoomLevelMax((byte) MAXZOOM);
-        mapView.setZoomLevel((byte) CURRENTZOOM);
-        mapView.setCenter(new LatLong(DEFAULT_LOCATION.latitude, DEFAULT_LOCATION.longitude));
+        mapView.setZoomLevelMin((byte) propMinZoom);
+        mapView.setZoomLevelMax((byte) propMaxZoom);
+        mapView.setZoomLevel((byte) propZoom);
+        mapView.setCenter(new LatLong(propCenterLatLong.latitude, propCenterLatLong.longitude));
     }
 
     /**
@@ -175,7 +187,7 @@ public abstract class MapFragmentTemplate extends Fragment
      */
     protected MapPosition getDefaultInitialPosition()
     {
-        return new MapPosition(DEFAULT_LOCATION, getZoomLevelDefault());
+        return new MapPosition(propCenterLatLong, getZoomLevelDefault());
     }
 
     /**
@@ -196,7 +208,7 @@ public abstract class MapFragmentTemplate extends Fragment
             if (startZoomLevel == null)
             {
                 // it is actually possible to have no start zoom level in the file
-                startZoomLevel = new Byte((byte) CURRENTZOOM);
+                startZoomLevel = new Byte((byte) propZoom);
             }
 
             return new MapPosition(mapFile.startPosition(), startZoomLevel);
@@ -284,7 +296,7 @@ public abstract class MapFragmentTemplate extends Fragment
     {
         final LatLong center = mvp.getCenter();
 
-        if (center.equals(DEFAULT_LOCATION))
+        if (center.equals(propCenterLatLong))
         {
             mvp.setMapPosition(this.getInitialPosition());
         }
