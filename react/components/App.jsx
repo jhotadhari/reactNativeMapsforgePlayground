@@ -13,6 +13,7 @@ import {
 	Text,
 	useColorScheme,
 	useWindowDimensions,
+	PixelRatio,
 	View,
 } from 'react-native';
 
@@ -46,11 +47,37 @@ const App = () => {
 	const backgroundStyle = 'bg-neutral-300 dark:bg-slate-900';
 
 	const [showMarkers,setShowMarkers] = useState( true );
+
+
+	const [iconIndex,setIconIndex] = useState( 0 );
+
 	const [locations,setLocations] = useState( [
 		[52.5, 13.4],
 		[52.51, 13.42],
 		[52.53, 13.46],
 	] );
+
+	const icons = [
+		// '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_red.png',
+		// '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_white.png',
+
+		{
+			width: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+			height: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+		},
+
+		{
+			path: '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_green.png',
+			width: PixelRatio.getPixelSizeForLayoutSize( 50 ),
+			height: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+			anchor: [
+				0,
+				- PixelRatio.getPixelSizeForLayoutSize( 70 ) / 2,
+			],
+		}
+
+
+	];
 
 	const { width, height } = useWindowDimensions();
 
@@ -77,10 +104,8 @@ const App = () => {
 							{ [...locations].map( ( latLong, index ) => <Marker
 								latLong={ latLong }
 								key={ index }
+								icon={ icons[iconIndex] }
 							/> ) }
-
-
-
 						</> }
 					</MapContainer>
 
@@ -106,6 +131,10 @@ const App = () => {
 						setLocations( newLocations );
 					} }
 					title="random locations"
+				/>
+				<Button
+					onPress={ () => setIconIndex( iconIndex + 1 === icons.length ? 0 : iconIndex + 1 ) }
+					title="Change icons"
 				/>
 			</View>
 		</SafeAreaView>
