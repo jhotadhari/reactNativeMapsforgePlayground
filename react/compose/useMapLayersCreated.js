@@ -3,9 +3,11 @@ import {
 	useState,
 } from 'react';
 import {
+	NativeModules,
 	NativeEventEmitter,
 } from 'react-native';
-import PropTypes from 'prop-types';
+
+const { MapContainerModule } = NativeModules;
 
 const useMapLayersCreated = viewId => {
 
@@ -21,6 +23,15 @@ const useMapLayersCreated = viewId => {
 		return () => {
 			eventListener.remove();
 		};
+	}, [viewId] );
+
+
+	useEffect( () => {
+		if ( viewId && null !== viewId ) {
+			MapContainerModule.getLayersCreated( viewId ).then( created => {
+				setMapLayersCreated( !! created );
+			} );
+		}
 	}, [viewId] );
 
 	return mapLayersCreated;

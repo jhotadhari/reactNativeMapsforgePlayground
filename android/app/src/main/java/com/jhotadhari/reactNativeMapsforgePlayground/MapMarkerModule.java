@@ -8,15 +8,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
-import androidx.fragment.app.FragmentActivity;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidBitmap;
@@ -35,13 +31,6 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "MapMarkerModule";
-    }
-
-    protected MapView getMapView( int reactTag ) {
-        FragmentActivity activity = (FragmentActivity) this.getReactApplicationContext().getCurrentActivity();
-        MapFragment mapFragment = (MapFragment) activity.getSupportFragmentManager().findFragmentById( (int) reactTag );
-        MapView mapView = (MapView) mapFragment.getMapView();
-        return mapView;
     }
 
     protected Bitmap getBitmap( String path, int width, int height ) {
@@ -79,7 +68,11 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
                 icon.getInt( "width" ),
                 icon.getInt( "height" )
             );
-            MapView mapView = (MapView) getMapView( reactTag );
+            MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
+            if ( null == mapView ) {
+                promise.resolve( false );
+                return;
+            }
             Marker marker = new Marker(
                 new LatLong(
                     (Double) latLong.toArrayList().get(0),
@@ -101,7 +94,11 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMarkerLocation( int reactTag, int hash, ReadableArray latLong, Promise promise ) {
         try {
-            MapView mapView = (MapView) getMapView( reactTag );
+            MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
+            if ( null == mapView ) {
+                promise.resolve( false );
+                return;
+            }
             Marker marker = markers.get( hash );
             marker.setLatLong( new LatLong(
                     (Double) latLong.toArrayList().get(0),
@@ -116,7 +113,11 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setMarkerIcon( int reactTag, int hash, ReadableMap icon, Promise promise ) {
         try {
-            MapView mapView = (MapView) getMapView( reactTag );
+            MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
+            if ( null == mapView ) {
+                promise.resolve( false );
+                return;
+            }
             Marker marker = markers.get( hash );
             Bitmap bitmap = getBitmap(
                 icon.getString( "path" ),
@@ -136,9 +137,13 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void removeMarker(int reactTag, int hash, Promise promise) {
         try {
-            MapView mapView = (MapView) getMapView( reactTag );
+            MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
+            if ( null == mapView ) {
+                promise.resolve( false );
+                return;
+            }
             mapView.getLayerManager().getLayers().remove( markers.get( hash ) );
-            promise.resolve(true);
+            promise.resolve(hash);
         } catch(Exception e) {
             promise.reject("Create Event Error", e);
         }

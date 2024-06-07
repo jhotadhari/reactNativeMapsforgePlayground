@@ -57,7 +57,7 @@ const Marker = ( {
 		mapLayersCreated,
 		mapViewManager && mapViewManager._nativeTag,
 		mapViewManager?._nativeTag,
-		hash,
+		!! hash,
 	] );
 
 	useEffect( () => {
