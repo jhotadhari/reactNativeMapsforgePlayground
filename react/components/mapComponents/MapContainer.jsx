@@ -2,7 +2,6 @@ import React, {
 	useEffect,
 	useRef,
 	useState,
-	useContext,
 } from 'react';
 import {
 	PixelRatio,
@@ -15,6 +14,8 @@ import {
 
 import { MapViewManager } from './MapViewManager.jsx';
 import { MapContext } from '../../MapContext.js';
+import useMapLayersCreated from '../../compose/useMapLayersCreated';
+const { MapContainerModule } = NativeModules;
 
 const createFragment = viewId =>
 	UIManager.dispatchViewManagerCommand(
@@ -43,6 +44,8 @@ const MapContainer = ( {
 
 	const [viewId,setViewId] = useState( null );
 
+	const mapLayersCreated = useMapLayersCreated( ref?.current?._nativeTag );
+
 	width = useDefaultWidth( width );
 	height = height || 200;
 	center = center && Array.isArray( center ) && center.length === 2 ? center : [52.5, 13.4];
@@ -58,6 +61,12 @@ const MapContainer = ( {
 			createFragment( viewId );
 		}
 	}, [viewId] );
+
+	useEffect( () => {
+		if ( mapLayersCreated && viewId ) {
+			MapContainerModule.setZoom( viewId, zoom );
+		}
+	}, [zoom] );
 
 	return <MapContext.Provider value={ {
 		mapViewManager: ref?.current,

@@ -5,13 +5,14 @@
  * @format
  */
 
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
 	Button,
 	SafeAreaView,
 	StatusBar,
 	Text,
 	useColorScheme,
+	NativeModules,
 	useWindowDimensions,
 	PixelRatio,
 	View,
@@ -23,6 +24,8 @@ import {
 	MapContainer,
 	Marker,
 } from './mapComponents';
+import { MapContext } from '../MapContext';
+const { MapContainerModule } = NativeModules;
 
 // const Section = ( {
 // 	children,
@@ -41,6 +44,15 @@ import {
 // 	);
 // };
 
+
+const LiftViewIdStateUp = ( { setMainMapViewId } ) => {
+	const { mapViewManager } = useContext( MapContext );
+	useEffect( () => {
+		setMainMapViewId( mapViewManager?._nativeTag );
+	}, [mapViewManager?._nativeTag] );
+	return null;
+};
+
 const App = () => {
 	const isDarkMode = useColorScheme() === 'dark';
 
@@ -48,6 +60,7 @@ const App = () => {
 
 	const [showMarkers,setShowMarkers] = useState( true );
 
+	const [mainMapViewId,setMainMapViewId] = useState( null );
 
 	const [iconIndex,setIconIndex] = useState( 0 );
 
@@ -99,10 +112,13 @@ const App = () => {
 					<MapContainer
 						height={ height }
 						// center={ [52, 13] }
-						zoom={ 18 }
-						minZoom={ 12 }
-						maxZoom={ 18 }
+						zoom={ 11 }
+						// minZoom={ 12 }
+						// maxZoom={ 18 }
 					>
+
+						<LiftViewIdStateUp setMainMapViewId={ setMainMapViewId } />
+
 						{ showMarkers && <>
 
 							{ [...locations].map( ( latLong, index ) => <Marker
@@ -122,24 +138,41 @@ const App = () => {
 
 			</View>
 
-			<View className="bg-white dark:bg-black absolute top left flex flex-row justify-around w-full">
-				<Button
-					onPress={ () => {
-						setShowMarkers( ! showMarkers );
-					} }
-					title="Toggle Markers"
-				/>
-				<Button
-					onPress={ () => {
-						const newLocations = [...locations].map( coords => [...coords].map( coord => Math.random() > 0.5 ? coord + 0.01 : coord - 0.01 ) );
-						setLocations( newLocations );
-					} }
-					title="random locations"
-				/>
-				<Button
-					onPress={ () => setIconIndex( iconIndex + 1 === icons.length ? 0 : iconIndex + 1 ) }
-					title="Change icons"
-				/>
+			<View className="bg-white dark:bg-black absolute top left flex flex-column w-full">
+				<View className="flex flex-row justify-around w-full">
+					<Button
+						onPress={ () => {
+							setShowMarkers( ! showMarkers );
+						} }
+						title="Toggle Markers"
+					/>
+					<Button
+						onPress={ () => {
+							const newLocations = [...locations].map( coords => [...coords].map( coord => Math.random() > 0.5 ? coord + 0.01 : coord - 0.01 ) );
+							setLocations( newLocations );
+						} }
+						title="random locations"
+					/>
+					<Button
+						onPress={ () => setIconIndex( iconIndex + 1 === icons.length ? 0 : iconIndex + 1 ) }
+						title="Change icons"
+					/>
+				</View>
+
+				<View className="flex flex-row justify-around w-full mt-5">
+					<Button
+						onPress={ () => {
+							MapContainerModule.zoomIn( mainMapViewId );
+						} }
+						title="+"
+					/>
+					<Button
+						onPress={ () => {
+							MapContainerModule.zoomOut( mainMapViewId );
+						} }
+						title="-"
+					/>
+				</View>
 			</View>
 		</SafeAreaView>
 	);
