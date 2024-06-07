@@ -9,30 +9,30 @@ import {
 
 const { MapContainerModule } = NativeModules;
 
-const useMapLayersCreated = viewId => {
+const useMapLayersCreated = mapViewNativeTag => {
 
 	const [mapLayersCreated,setMapLayersCreated] = useState( false );
 
 	useEffect( () => {
 		const eventEmitter = new NativeEventEmitter();
 		let eventListener = eventEmitter.addListener( 'MapLayersCreated', result => {
-			if ( result.nativeTag === viewId ) {
+			if ( result.nativeTag === mapViewNativeTag ) {
 				setMapLayersCreated( true );
 			}
 		} );
 		return () => {
 			eventListener.remove();
 		};
-	}, [viewId] );
+	}, [mapViewNativeTag] );
 
 
 	useEffect( () => {
-		if ( viewId && null !== viewId ) {
-			MapContainerModule.getLayersCreated( viewId ).then( created => {
+		if ( mapViewNativeTag ) {
+			MapContainerModule.getLayersCreated( mapViewNativeTag ).then( created => {
 				setMapLayersCreated( !! created );
 			} );
 		}
-	}, [viewId] );
+	}, [mapViewNativeTag] );
 
 	return mapLayersCreated;
 };

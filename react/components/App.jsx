@@ -46,10 +46,10 @@ const { MapContainerModule } = NativeModules;
 
 
 const LiftViewIdStateUp = ( { setMainMapViewId } ) => {
-	const { mapViewManager } = useContext( MapContext );
+	const { mapViewNativeTag } = useContext( MapContext );
 	useEffect( () => {
-		setMainMapViewId( mapViewManager?._nativeTag );
-	}, [mapViewManager?._nativeTag] );
+		setMainMapViewId( mapViewNativeTag );
+	}, [mapViewNativeTag] );
 	return null;
 };
 

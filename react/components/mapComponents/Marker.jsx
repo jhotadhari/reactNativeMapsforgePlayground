@@ -23,7 +23,7 @@ const Marker = ( {
 } ) => {
 
 	const {
-		mapViewManager,
+		mapViewNativeTag,
 	} = useContext( MapContext );
 
 	const iconWithDefaults = {
@@ -36,39 +36,37 @@ const Marker = ( {
 
 	const [hash,setHash] = useState( null );
 
-	const mapLayersCreated = useMapLayersCreated( mapViewManager?._nativeTag );
+	const mapLayersCreated = useMapLayersCreated( mapViewNativeTag );
 
 	useEffect( () => {
-		if ( mapLayersCreated && null === hash && mapViewManager && mapViewManager._nativeTag ) {
+		if ( mapLayersCreated && null === hash && mapViewNativeTag ) {
 			setHash( false );
-			MapMarkerModule.createMarker( mapViewManager._nativeTag, latLong, iconWithDefaults ).then( newHash => {
+			MapMarkerModule.createMarker( mapViewNativeTag, latLong, iconWithDefaults ).then( newHash => {
 				if ( newHash ) {
 					setHash( newHash );
 				}
 			} );
 		}
 		return () => {
-			if ( hash && mapViewManager && mapViewManager._nativeTag ) {
-
-				MapMarkerModule.removeMarker( mapViewManager._nativeTag, hash );
+			if ( hash && mapViewNativeTag ) {
+				MapMarkerModule.removeMarker( mapViewNativeTag, hash );
 			}
 		};
 	}, [
 		mapLayersCreated,
-		mapViewManager && mapViewManager._nativeTag,
-		mapViewManager?._nativeTag,
+		mapViewNativeTag,
 		!! hash,
 	] );
 
 	useEffect( () => {
-		if ( hash && mapViewManager && mapViewManager._nativeTag ) {
-			MapMarkerModule.setMarkerLocation( mapViewManager._nativeTag, hash, latLong );
+		if ( hash && mapViewNativeTag ) {
+			MapMarkerModule.setMarkerLocation( mapViewNativeTag, hash, latLong );
 		}
 	}, [latLong] );
 
 	useEffect( () => {
-		if ( hash && mapViewManager && mapViewManager._nativeTag ) {
-			MapMarkerModule.setMarkerIcon( mapViewManager._nativeTag, hash, iconWithDefaults );
+		if ( hash && mapViewNativeTag ) {
+			MapMarkerModule.setMarkerIcon( mapViewNativeTag, hash, iconWithDefaults );
 		}
 	}, [icon] );
 

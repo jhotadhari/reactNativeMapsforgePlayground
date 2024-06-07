@@ -18,12 +18,12 @@ import { MapContext } from '../../MapContext.js';
 import useMapLayersCreated from '../../compose/useMapLayersCreated';
 const { MapContainerModule } = NativeModules;
 
-const createFragment = viewId =>
+const createFragment = mapViewNativeTag =>
 	UIManager.dispatchViewManagerCommand(
-		viewId,
+		mapViewNativeTag,
 		// we are calling the 'create' command
 		UIManager.MapViewManager.Commands.create.toString(),
-		[viewId],
+		[mapViewNativeTag],
 	);
 
 const useDefaultWidth = propsWidth => {
@@ -43,7 +43,7 @@ const MapContainer = ( {
 
 	const ref = useRef( null );
 
-	const [viewId,setViewId] = useState( null );
+	const [mapViewNativeTag,setMapViewNativeTag] = useState( null );
 
 	const mapLayersCreated = useMapLayersCreated( ref?.current?._nativeTag );
 
@@ -55,46 +55,46 @@ const MapContainer = ( {
 	maxZoom = maxZoom || 50;
 
 	useEffect( () => {
-		setViewId( findNodeHandle( ref.current ) );
+		setMapViewNativeTag( findNodeHandle( ref.current ) );
 	}, [] );
 	useEffect( () => {
-		if ( viewId ) {
-			createFragment( viewId );
+		if ( mapViewNativeTag ) {
+			createFragment( mapViewNativeTag );
 		}
-	}, [viewId] );
+	}, [mapViewNativeTag] );
 
 	useEffect( () => {
-		if ( mapLayersCreated && viewId ) {
-			MapContainerModule.setZoom( viewId, zoom );
+		if ( mapLayersCreated && mapViewNativeTag ) {
+			MapContainerModule.setZoom( mapViewNativeTag, zoom );
 		}
 	}, [zoom] );
 
 	useEffect( () => {
 		const eventEmitter = new NativeEventEmitter();
 		let eventListener = eventEmitter.addListener( 'MapMove', result => {
-			if ( result.nativeTag === viewId ) {
+			if ( result.nativeTag === mapViewNativeTag ) {
 				console.log( 'debug on move', result ); // debug
 			}
 		} );
 		return () => {
 			eventListener.remove();
 		};
-	}, [viewId] );
+	}, [mapViewNativeTag] );
 
 	useEffect( () => {
 		const eventEmitter = new NativeEventEmitter();
 		let eventListener = eventEmitter.addListener( 'MapZoom', result => {
-			if ( result.nativeTag === viewId ) {
+			if ( result.nativeTag === mapViewNativeTag ) {
 				console.log( 'debug on zoom', result ); // debug
 			}
 		} );
 		return () => {
 			eventListener.remove();
 		};
-	}, [viewId] );
+	}, [mapViewNativeTag] );
 
 	return <MapContext.Provider value={ {
-		mapViewManager: ref?.current,
+		mapViewNativeTag: ref?.current?._nativeTag,
 	} }>
 		{/* Wrap into non scrollable ScrollView to fix top positioning */}
 		<ScrollView scrollEnabled={ false }>
