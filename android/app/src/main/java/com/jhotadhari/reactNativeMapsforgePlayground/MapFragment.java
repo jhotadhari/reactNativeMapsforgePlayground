@@ -93,9 +93,13 @@ public class MapFragment extends MapFragmentTemplate {
         TileRendererLayer tileRendererLayer = AndroidUtil.createTileRendererLayer(this.tileCaches.get(0),
                 this.mapView.getModel().mapViewPosition, getMapFile(), getRenderTheme(), false, true, false);
         this.mapView.getLayerManager().getLayers().add(tileRendererLayer);
+
         WritableMap params = new WritableNativeMap();
         params.putInt( "nativeTag", this.getId() );
         sendEvent( reactContext, "MapLayersCreated", params );
+
+        MapInputListener mapInputListener = new MapInputListener( this.reactContext, this.getId(), this.mapView );
+        this.mapView.addInputListener( mapInputListener );
     }
 
     /**

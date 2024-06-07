@@ -9,6 +9,7 @@ import {
 	findNodeHandle,
 	useWindowDimensions,
 	ScrollView,
+	NativeEventEmitter,
 	NativeModules,
 } from 'react-native';
 
@@ -35,7 +36,7 @@ const MapContainer = ( {
 	width,		// ??? TODO doesn't react on prop change
 	height,		// ??? TODO doesn't react on prop change
 	center,		// ??? TODO doesn't react on prop change
-	zoom,		// ??? TODO doesn't react on prop change
+	zoom,
 	minZoom,	// ??? TODO doesn't react on prop change
 	maxZoom,	// ??? TODO doesn't react on prop change
 } ) => {
@@ -67,6 +68,30 @@ const MapContainer = ( {
 			MapContainerModule.setZoom( viewId, zoom );
 		}
 	}, [zoom] );
+
+	useEffect( () => {
+		const eventEmitter = new NativeEventEmitter();
+		let eventListener = eventEmitter.addListener( 'MapMove', result => {
+			if ( result.nativeTag === viewId ) {
+				console.log( 'debug on move', result ); // debug
+			}
+		} );
+		return () => {
+			eventListener.remove();
+		};
+	}, [viewId] );
+
+	useEffect( () => {
+		const eventEmitter = new NativeEventEmitter();
+		let eventListener = eventEmitter.addListener( 'MapZoom', result => {
+			if ( result.nativeTag === viewId ) {
+				console.log( 'debug on zoom', result ); // debug
+			}
+		} );
+		return () => {
+			eventListener.remove();
+		};
+	}, [viewId] );
 
 	return <MapContext.Provider value={ {
 		mapViewManager: ref?.current,
