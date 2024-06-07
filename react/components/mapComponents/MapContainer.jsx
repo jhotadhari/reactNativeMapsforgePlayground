@@ -1,4 +1,5 @@
 import React, {
+	cloneElement,
 	useEffect,
 	useRef,
 	useState,
@@ -93,6 +94,21 @@ const MapContainer = ( {
 		};
 	}, [mapViewNativeTag] );
 
+	let lastIndex = -1;
+	const wrapChildren = children => children ? React.Children.map( children, ( child, index ) => {
+		lastIndex = child?.type?.isMapLayer ? lastIndex + 1 : lastIndex;
+		const newChild = child ? cloneElement(
+			child,
+			{
+				...( child.type.isMapLayer && { reactTreeIndex: lastIndex } ),
+				...( child.props.children && { children: wrapChildren( child.props.children ) } ),
+			}
+		) : child;
+		return newChild;
+	} ) : children;
+
+	const wrappedChildren = wrapChildren( children );
+
 	return <MapContext.Provider value={ {
 		mapViewNativeTag: ref?.current?._nativeTag,
 	} }>
@@ -107,7 +123,7 @@ const MapContainer = ( {
 				minZoom={ minZoom }
 				maxZoom={ maxZoom }
 			/>
-			{ children }
+			{ wrappedChildren }
 		</ScrollView>
 	</MapContext.Provider>;
 };

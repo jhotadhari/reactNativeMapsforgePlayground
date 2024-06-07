@@ -20,11 +20,13 @@ const defaultIconSize = PixelRatio.getPixelSizeForLayoutSize( 20 );
 const Marker = ( {
 	latLong,
 	icon,
+    reactTreeIndex,
 } ) => {
 
 	const {
 		mapViewNativeTag,
 	} = useContext( MapContext );
+    console.log( 'debug Marker reactTreeIndex', reactTreeIndex ); // debug
 
 	const iconWithDefaults = {
 		width: defaultIconSize,		// number
@@ -41,7 +43,7 @@ const Marker = ( {
 	useEffect( () => {
 		if ( mapLayersCreated && null === hash && mapViewNativeTag ) {
 			setHash( false );
-			MapMarkerModule.createMarker( mapViewNativeTag, latLong, iconWithDefaults ).then( newHash => {
+			MapMarkerModule.createMarker( mapViewNativeTag, latLong, iconWithDefaults, reactTreeIndex ).then( newHash => {
 				if ( newHash ) {
 					setHash( newHash );
 				}
@@ -72,6 +74,8 @@ const Marker = ( {
 
 	return null;
 };
+
+Marker.isMapLayer = true;
 
 Marker.propTypes = {
 	latLong: function( props, propName, componentName) {

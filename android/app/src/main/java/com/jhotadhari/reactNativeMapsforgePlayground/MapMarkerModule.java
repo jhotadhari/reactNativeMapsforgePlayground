@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
@@ -61,7 +62,7 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createMarker(int reactTag, ReadableArray latLong, ReadableMap icon, Promise promise ) {
+    public void createMarker(int reactTag, ReadableArray latLong, ReadableMap icon, int reactTreeIndex, Promise promise ) {
         try {
             Bitmap bitmap = getBitmap(
                 icon.getString( "path" ),
@@ -82,7 +83,10 @@ public class MapMarkerModule extends ReactContextBaseJavaModule {
                 (int) icon.getArray("anchor").getDouble(0 ),
                 (int) icon.getArray("anchor").getDouble(1 )
             );
-            mapView.getLayerManager().getLayers().add( marker );
+            mapView.getLayerManager().getLayers().add(
+                    Math.min( mapView.getLayerManager().getLayers().size(), (int) reactTreeIndex ),
+                    marker
+            );
             int hash = marker.hashCode();
             markers.put( hash, marker );
             promise.resolve(hash);
