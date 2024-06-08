@@ -16,13 +16,17 @@ import org.mapsforge.map.android.graphics.AndroidBitmap;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
+import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
+import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MapLayerMapsforgeModule extends ReactContextBaseJavaModule {
@@ -39,12 +43,17 @@ public class MapLayerMapsforgeModule extends ReactContextBaseJavaModule {
         return "MapLayerMapsforgeModule";
     }
 
+    protected XmlRenderTheme getRenderTheme( String renderThemePath ) {
+        return InternalRenderTheme.DEFAULT;
+    }
 
     @ReactMethod
     public void createLayer(int reactTag, String mapFileName, String renderTheme, int reactTreeIndex, Promise promise ) {
         try {
             MapFragment mapFragment = Utils.getMapFragment( this.getReactApplicationContext(), reactTag );
             MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
+
+
             if ( mapFragment == null || null == mapView ) {
                 promise.resolve( false );
                 return;
@@ -54,6 +63,12 @@ public class MapLayerMapsforgeModule extends ReactContextBaseJavaModule {
                 promise.resolve( false );
                 return;
             }
+
+            TileCache tileCache = MapTileCacheController.getInstance( this.getReactApplicationContext() ).addCache(
+                mapFileName,
+                mapView
+            );
+
 
 
 
@@ -65,10 +80,10 @@ public class MapLayerMapsforgeModule extends ReactContextBaseJavaModule {
             MapDataStore mmapfile = new MapFile( mapfile );
 
             TileRendererLayer tileRendererLayer = AndroidUtil.createTileRendererLayer(
-                    mapFragment.tileCaches.get(0),
+                    tileCache,
                     mapView.getModel().mapViewPosition,
                     mmapfile,
-                    InternalRenderTheme.DEFAULT,
+                    getRenderTheme( renderTheme ),
                     false,
                     true,
                     false
