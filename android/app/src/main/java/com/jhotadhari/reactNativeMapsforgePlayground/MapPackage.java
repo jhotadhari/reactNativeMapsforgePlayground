@@ -23,6 +23,7 @@ public class MapPackage implements ReactPackage {
         ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new MapContainerModule(reactContext));
+        modules.add(new MapLayerMapsforgeModule(reactContext));
         modules.add(new MapMarkerModule(reactContext));
         return modules;
     }

@@ -264,9 +264,13 @@ public abstract class MapFragmentTemplate extends Fragment
      *
      * @return the id that is used to save this mapview.
      */
+//    protected String getPersistableId()
+//    {
+//        return this.getClass().getSimpleName();
+//    }
     protected String getPersistableId()
     {
-        return this.getClass().getSimpleName();
+        return String.valueOf( this.getId() );
     }
 
     /**
