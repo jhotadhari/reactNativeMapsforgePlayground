@@ -1,32 +1,23 @@
 package com.jhotadhari.reactNativeMapsforgePlayground;
 
-import android.util.Log;
-import android.graphics.BitmapFactory;
-
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
 
-import org.mapsforge.core.graphics.Bitmap;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.map.android.graphics.AndroidBitmap;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
 import org.mapsforge.map.layer.cache.TileCache;
-import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.InternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MapLayerMapsforgeModule extends ReactContextBaseJavaModule {
@@ -44,11 +35,21 @@ public class MapLayerMapsforgeModule extends ReactContextBaseJavaModule {
     }
 
     protected XmlRenderTheme getRenderTheme( String renderThemePath ) {
-        return InternalRenderTheme.DEFAULT;
+        switch( renderThemePath ) {
+            case "DEFAULT":
+            case "OSMARENDER":
+                return InternalRenderTheme.valueOf( renderThemePath );
+            default:
+                try {
+                    return new ExternalRenderTheme( new File( renderThemePath ) );
+                } catch ( FileNotFoundException e ) {
+                    return InternalRenderTheme.DEFAULT;
+                }
+        }
     }
 
     @ReactMethod
-    public void createLayer(int reactTag, String mapFileName, String renderTheme, int reactTreeIndex, Promise promise ) {
+    public void createLayer(int reactTag, String mapFileName, String renderThemePath, int reactTreeIndex, Promise promise ) {
         try {
             MapFragment mapFragment = Utils.getMapFragment( this.getReactApplicationContext(), reactTag );
             MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
@@ -69,21 +70,13 @@ public class MapLayerMapsforgeModule extends ReactContextBaseJavaModule {
                 mapView
             );
 
-
-
-
-
-            // ??? TODO handle renderTheme
-
-
-
             MapDataStore mmapfile = new MapFile( mapfile );
 
             TileRendererLayer tileRendererLayer = AndroidUtil.createTileRendererLayer(
                     tileCache,
                     mapView.getModel().mapViewPosition,
                     mmapfile,
-                    getRenderTheme( renderTheme ),
+                    getRenderTheme( renderThemePath ),
                     false,
                     true,
                     false

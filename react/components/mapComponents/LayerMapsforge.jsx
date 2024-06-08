@@ -15,14 +15,15 @@ import useMapLayersCreated from '../../compose/useMapLayersCreated';
 
 const { MapLayerMapsforgeModule } = NativeModules;
 
-
 const LayerMapsforge = ( {
 	mapFile,
 	renderTheme,
 	reactTreeIndex,
+
+	// persistentCache,	// ??? TODO
 } ) => {
 
-	renderTheme = renderTheme || '';
+	renderTheme = renderTheme || 'DEFAULT';
 
 	const { mapViewNativeTag } = useContext( MapContext );
 
@@ -32,14 +33,18 @@ const LayerMapsforge = ( {
 
 	const mapLayersCreated = useMapLayersCreated( mapViewNativeTag );
 
+	const createLayer = () => {
+		MapLayerMapsforgeModule.createLayer( mapViewNativeTag, mapFile, renderTheme, reactTreeIndex ).then( newHash => {
+			if ( newHash ) {
+				setHash( newHash );
+			}
+		} );
+	};
+
 	useEffect( () => {
 		if ( mapLayersCreated && null === hash && mapViewNativeTag && mapFile ) {
 			setHash( false );
-			MapLayerMapsforgeModule.createLayer( mapViewNativeTag, mapFile, renderTheme, reactTreeIndex ).then( newHash => {
-				if ( newHash ) {
-					setHash( newHash );
-				}
-			} );
+			createLayer();
 		}
 		return () => {
 			if ( hash && mapViewNativeTag ) {
@@ -53,16 +58,22 @@ const LayerMapsforge = ( {
 	] );
 
 	useEffect( () => {
-		// if ( hash && mapViewNativeTag ) {
-		// 	MapLayerMapsforgeModule.setMarkerLocation( mapViewNativeTag, hash, latLong );
-		// }
-	}, [mapFile] );
+		if ( mapLayersCreated && hash && mapViewNativeTag ) {
+			MapLayerMapsforgeModule.removeLayer( mapViewNativeTag, hash ).then( removedHash => {
+				if ( removedHash ) {
+					MapLayerMapsforgeModule.createLayer( mapViewNativeTag, mapFile, renderTheme, reactTreeIndex ).then( newHash => {
+						if ( newHash ) {
+							setHash( newHash );
+						}
+					} );
+				}
 
-	useEffect( () => {
-		// if ( hash && mapViewNativeTag ) {
-		// 	MapLayerMapsforgeModule.setMarkerIcon( mapViewNativeTag, hash, iconWithDefaults );
-		// }
-	}, [renderTheme] );
+			} );
+		}
+	}, [
+		mapFile,
+		renderTheme,
+	] );
 
 	return null;
 };
