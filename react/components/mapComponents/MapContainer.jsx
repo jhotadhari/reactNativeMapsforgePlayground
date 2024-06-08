@@ -44,13 +44,17 @@ const MapContainer = ( {
 
 	const ref = useRef( null );
 
-	const [mapViewNativeTag,setMapViewNativeTag] = useState( null );
+	const [
+		mapViewNativeTag, setMapViewNativeTag,
+	] = useState( null );
 
 	const mapLayersCreated = useMapLayersCreated( ref?.current?._nativeTag );
 
 	width = useDefaultWidth( width );
 	height = height || 200;
-	center = center && Array.isArray( center ) && center.length === 2 ? center : [52.5, 13.4];
+	center = center && Array.isArray( center ) && center.length === 2 ? center : [
+		52.5, 13.4,
+	];
 	zoom = zoom || 12;
 	minZoom = minZoom || 3;
 	maxZoom = maxZoom || 50;
@@ -102,16 +106,16 @@ const MapContainer = ( {
 			{
 				...( child.type.isMapLayer && { reactTreeIndex: lastIndex } ),
 				...( child.props.children && { children: wrapChildren( child.props.children ) } ),
-			}
+			},
 		) : child;
 		return newChild;
 	} ) : children;
 
 	const wrappedChildren = wrapChildren( children );
 
-	return <MapContext.Provider value={ {
-		mapViewNativeTag: ref?.current?._nativeTag,
-	} }>
+	return <MapContext.Provider
+		value={ { mapViewNativeTag: ref?.current?._nativeTag } }
+	>
 		{/* Wrap into non scrollable ScrollView to fix top positioning */}
 		<ScrollView scrollEnabled={ false }>
 			<MapViewManager

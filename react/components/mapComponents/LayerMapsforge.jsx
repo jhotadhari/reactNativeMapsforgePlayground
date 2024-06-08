@@ -19,16 +19,16 @@ const { MapLayerMapsforgeModule } = NativeModules;
 const LayerMapsforge = ( {
 	mapFile,
 	renderTheme,
-    reactTreeIndex,
+	reactTreeIndex,
 } ) => {
 
 	renderTheme = renderTheme || '';
 
-	const {
-		mapViewNativeTag,
-	} = useContext( MapContext );
+	const { mapViewNativeTag } = useContext( MapContext );
 
-	const [hash,setHash] = useState( null );
+	const [
+		hash, setHash,
+	] = useState( null );
 
 	const mapLayersCreated = useMapLayersCreated( mapViewNativeTag );
 

@@ -17,5 +17,5 @@ export const MapViewManager = requireNativeComponent(
 			maxZoom: PropTypes.number,
 			...ViewPropTypes,
 		},
-	}
+	},
 );

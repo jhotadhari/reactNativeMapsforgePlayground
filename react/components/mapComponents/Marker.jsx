@@ -20,23 +20,25 @@ const defaultIconSize = PixelRatio.getPixelSizeForLayoutSize( 20 );
 const Marker = ( {
 	latLong,
 	icon,
-    reactTreeIndex,
+	reactTreeIndex,
 } ) => {
 
-	const {
-		mapViewNativeTag,
-	} = useContext( MapContext );
-    console.log( 'debug Marker reactTreeIndex', reactTreeIndex ); // debug
+	const { mapViewNativeTag } = useContext( MapContext );
+	console.log( 'debug Marker reactTreeIndex', reactTreeIndex ); // debug
 
 	const iconWithDefaults = {
 		width: defaultIconSize,		// number
 		height: defaultIconSize,	// number
 		path: '',					// absolute path or empty. if empty, java will fallback to a round icon.
-		anchor: [0,0],				// array of two numbers. horizontal and vertical offset from center.
+		anchor: [
+			0, 0,
+		],				// array of two numbers. horizontal and vertical offset from center.
 		...( icon || {} ),
 	};
 
-	const [hash,setHash] = useState( null );
+	const [
+		hash, setHash,
+	] = useState( null );
 
 	const mapLayersCreated = useMapLayersCreated( mapViewNativeTag );
 
@@ -78,7 +80,7 @@ const Marker = ( {
 Marker.isMapLayer = true;
 
 Marker.propTypes = {
-	latLong: function( props, propName, componentName) {
+	latLong: function( props, propName, componentName ) {
 		if (
 			! Array.isArray( props[propName] )																// is Array
 			|| props[propName].length !== 2																	// is length 2
@@ -88,7 +90,7 @@ Marker.propTypes = {
 		}
 	},
 
-	icon: function( props, propName, componentName) {
+	icon: function( props, propName, componentName ) {
 		if ( undefined !== props[propName] ) {
 
 			let isError = typeof props[propName] !== 'object';
@@ -102,19 +104,27 @@ Marker.propTypes = {
 
 			if ( ! isError && undefined !== path
 				&& typeof path !== 'string'
-			) { isError = true; }
+			) {
+				isError = true;
+			}
 
 			if ( ! isError && undefined !== width
 				&& ( typeof width !== 'number' || width < 0 )
-			) { isError = true; }
+			) {
+				isError = true;
+			}
 
 			if ( ! isError && undefined !== height
 				&& ( typeof height !== 'number' || height < 0 )
-			) { isError = true; }
+			) {
+				isError = true;
+			}
 
 			if ( ! isError && undefined !== anchor
 				&& ( ! Array.isArray( anchor ) || anchor.length !== 2 || ! [...anchor].reduce( ( acc, val ) => acc ? typeof val === 'number' : acc, true ) )
-			) { isError = true; }
+			) {
+				isError = true;
+			}
 
 			if ( isError ) {
 				return new Error( 'Invalid prop `' + propName + '` supplied to' + ' `' + componentName + '`. Validation failed.' );

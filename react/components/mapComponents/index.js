@@ -3,7 +3,7 @@ import LayerMapsforge from './LayerMapsforge.jsx';
 import Marker from './Marker.jsx';
 
 export {
-    MapContainer,
-    LayerMapsforge,
-    Marker,
+	MapContainer,
+	LayerMapsforge,
+	Marker,
 };
