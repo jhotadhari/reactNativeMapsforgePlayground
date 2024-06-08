@@ -10,6 +10,7 @@
     "format": "eslint --fix --config ./eslint.config.js react"
   },
   "dependencies": {
+    "@react-native-picker/picker": "^2.7.6",
     "nativewind": "^4.0.36",
     "react": "18.2.0",
     "react-native": "0.74.1",

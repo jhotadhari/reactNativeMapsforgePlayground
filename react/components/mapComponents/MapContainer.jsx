@@ -78,7 +78,7 @@ const MapContainer = ( {
 		const eventEmitter = new NativeEventEmitter();
 		let eventListener = eventEmitter.addListener( 'MapMove', result => {
 			if ( result.nativeTag === mapViewNativeTag ) {
-				console.log( 'debug on move', result ); // debug
+				// console.log( 'debug on move', result ); // debug
 			}
 		} );
 		return () => {
@@ -90,7 +90,7 @@ const MapContainer = ( {
 		const eventEmitter = new NativeEventEmitter();
 		let eventListener = eventEmitter.addListener( 'MapZoom', result => {
 			if ( result.nativeTag === mapViewNativeTag ) {
-				console.log( 'debug on zoom', result ); // debug
+				// console.log( 'debug on zoom', result ); // debug
 			}
 		} );
 		return () => {

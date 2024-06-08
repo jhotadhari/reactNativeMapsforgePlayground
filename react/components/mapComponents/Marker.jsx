@@ -24,7 +24,6 @@ const Marker = ( {
 } ) => {
 
 	const { mapViewNativeTag } = useContext( MapContext );
-	console.log( 'debug Marker reactTreeIndex', reactTreeIndex ); // debug
 
 	const iconWithDefaults = {
 		width: defaultIconSize,		// number
