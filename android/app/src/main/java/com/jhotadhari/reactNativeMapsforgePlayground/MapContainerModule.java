@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.view.MapView;
@@ -51,7 +52,7 @@ public class MapContainerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setCenter(int reactTag, ArrayList center, Promise promise ) {
+    public void setCenter(int reactTag, ReadableArray center, Promise promise ) {
         try {
             MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
             if ( null == mapView ) {
@@ -59,8 +60,8 @@ public class MapContainerModule extends ReactContextBaseJavaModule {
                 return;
             }
             mapView.setCenter( new LatLong(
-                (double) center.get(0),
-                (double) center.get(1)
+                (double) center.toArrayList().get(0),
+                (double) center.toArrayList().get(1)
             ) );
             promise.resolve(true);
         } catch(Exception e) {

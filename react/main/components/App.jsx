@@ -200,7 +200,7 @@ const App = () => {
 					{ showLayerMapsforge && <LayerMapsforge
 						mapFile={ mapFile }
 						renderTheme={ renderTheme }
-						// renderStyle={ renderStyle }
+						renderStyle={ renderStyle }
 						// renderOverlays={ renderOverlays }
 					/> }
 
