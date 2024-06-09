@@ -20,14 +20,12 @@ const LayerMapsforge = ( {
 	mapViewNativeTag,
 	mapFile,
 	renderTheme,
-	reactTreeIndex,
 	renderStyle,
 	renderOverlays,
+	reactTreeIndex,
 	// persistentCache,	// ??? TODO
 } ) => {
 
-
-	console.log( 'debug reactTreeIndex', reactTreeIndex ); // debug
 	renderTheme = renderTheme || 'DEFAULT';
 	renderStyle = renderStyle || '';
 	renderOverlays = renderOverlays || [];
@@ -99,7 +97,7 @@ const LayerMapsforge = ( {
 		mapFile,
 		renderTheme,
 		renderStyle,
-		renderOverlays,
+		( renderOverlays && Array.isArray( renderOverlays ) && renderOverlays.length ? renderOverlays : null ),
 	] );
 
 	return null;

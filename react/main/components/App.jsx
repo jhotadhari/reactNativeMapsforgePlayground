@@ -201,7 +201,7 @@ const App = () => {
 						mapFile={ mapFile }
 						renderTheme={ renderTheme }
 						renderStyle={ renderStyle }
-						// renderOverlays={ renderOverlays }
+						renderOverlays={ renderOverlays }
 					/> }
 
 					{ showMarkers && <>
