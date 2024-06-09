@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 
 import { MapViewManager } from './MapViewManager.jsx';
-import { MapContext } from '../../MapContext.js';
 import useMapLayersCreated from '../../compose/useMapLayersCreated';
 const { MapContainerModule } = NativeModules;
 
@@ -99,37 +98,34 @@ const MapContainer = ( {
 	}, [mapViewNativeTag] );
 
 	let lastIndex = -1;
-	const wrapChildren = children => children ? React.Children.map( children, ( child, index ) => {
+	const wrapChildren = children => ! children || ! ref?.current?._nativeTag ? null : React.Children.map( children, ( child, index ) => {
 		lastIndex = child?.type?.isMapLayer ? lastIndex + 1 : lastIndex;
 		const newChild = child ? cloneElement(
 			child,
 			{
+				mapViewNativeTag: ref?.current?._nativeTag,
 				...( child.type.isMapLayer && { reactTreeIndex: lastIndex } ),
 				...( child.props.children && { children: wrapChildren( child.props.children ) } ),
 			},
 		) : child;
 		return newChild;
-	} ) : children;
+	} );
 
 	const wrappedChildren = wrapChildren( children );
 
-	return <MapContext.Provider
-		value={ { mapViewNativeTag: ref?.current?._nativeTag } }
-	>
-		{/* Wrap into non scrollable ScrollView to fix top positioning */}
-		<ScrollView scrollEnabled={ false }>
-			<MapViewManager
-				ref={ ref }
-				width={ PixelRatio.getPixelSizeForLayoutSize( width ) }
-				height={ PixelRatio.getPixelSizeForLayoutSize( height ) }
-				center={ center }
-				zoom={ zoom }
-				minZoom={ minZoom }
-				maxZoom={ maxZoom }
-			/>
+	// Wrap into non scrollable ScrollView to fix top positioning.
+	return <ScrollView scrollEnabled={ false }>
+		<MapViewManager
+			ref={ ref }
+			width={ PixelRatio.getPixelSizeForLayoutSize( width ) }
+			height={ PixelRatio.getPixelSizeForLayoutSize( height ) }
+			center={ center }
+			zoom={ zoom }
+			minZoom={ minZoom }
+			maxZoom={ maxZoom }
+		/>
 			{ wrappedChildren }
-		</ScrollView>
-	</MapContext.Provider>;
+	</ScrollView>;
 };
 
 export default MapContainer;

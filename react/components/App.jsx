@@ -26,7 +26,6 @@ import {
  * Internal dependencies
  */
 import '../../global.css';
-import { MapContext } from '../MapContext';
 import {
 	MapContainer,
 	LayerMapsforge,
@@ -60,8 +59,7 @@ const icons = [
 
 ];
 
-const LiftViewIdStateUp = ( { setMainMapViewId } ) => {
-	const { mapViewNativeTag } = useContext( MapContext );
+const LiftViewIdStateUp = ( { mapViewNativeTag, setMainMapViewId } ) => {
 	useEffect( () => {
 		setMainMapViewId( mapViewNativeTag );
 	}, [mapViewNativeTag] );

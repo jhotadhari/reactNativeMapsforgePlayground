@@ -1,7 +1,9 @@
+ */
+ * External dependencies
+/**
 import React, {
 	useEffect,
 	useState,
-	useContext,
 } from 'react';
 import {
 	PixelRatio,
@@ -14,12 +16,12 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import usePrevious from './usePrevious';
-import { MapContext } from '../../MapContext';
 import useMapLayersCreated from '../../compose/useMapLayersCreated';
 
 const { MapLayerMapsforgeModule } = NativeModules;
 
 const LayerMapsforge = ( {
+	mapViewNativeTag,
 	mapFile,
 	renderTheme,
 	reactTreeIndex,
@@ -32,7 +34,6 @@ const LayerMapsforge = ( {
 	renderStyle = renderStyle || '';
 	renderOverlays = renderOverlays || [];
 
-	const { mapViewNativeTag } = useContext( MapContext );
 	const renderStylePrev = usePrevious( renderStyle );
 
 	const [

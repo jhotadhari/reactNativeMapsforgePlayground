@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { MapContext } from '../../MapContext';
 import useMapLayersCreated from '../../compose/useMapLayersCreated';
 
 const { MapMarkerModule } = NativeModules;
@@ -18,12 +17,11 @@ const { MapMarkerModule } = NativeModules;
 const defaultIconSize = PixelRatio.getPixelSizeForLayoutSize( 20 );
 
 const Marker = ( {
+	mapViewNativeTag,
 	latLong,
 	icon,
 	reactTreeIndex,
 } ) => {
-
-	const { mapViewNativeTag } = useContext( MapContext );
 
 	const iconWithDefaults = {
 		width: defaultIconSize,		// number
