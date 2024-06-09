@@ -16,8 +16,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import MapPropTypes from './MapPropTypes';
-import useMapLayersCreated from '../../compose/useMapLayersCreated';
+import MapPropTypes from '../MapPropTypes';
+import useMapLayersCreated from '../compose/useMapLayersCreated';
 const { MapMarkerModule } = NativeModules;
 
 const defaultIconSize = PixelRatio.getPixelSizeForLayoutSize( 20 );
@@ -82,50 +82,50 @@ const Marker = ( {
 
 Marker.isMapLayer = true;
 
-Marker.propTypes = {
-	mapViewNativeTag: PropTypes.number,
-	latLong: MapPropTypes.latLong,
-	icon: function( props, propName, componentName ) {
-		if ( undefined !== props[propName] ) {
+// Marker.propTypes = {
+// 	mapViewNativeTag: PropTypes.number,
+// 	latLong: MapPropTypes.latLong,
+// 	icon: function( props, propName, componentName ) {
+// 		if ( undefined !== props[propName] ) {
 
-			let isError = typeof props[propName] !== 'object';
+// 			let isError = typeof props[propName] !== 'object';
 
-			const {
-				path,
-				width,
-				height,
-				anchor,
-			} = props[propName];
+// 			const {
+// 				path,
+// 				width,
+// 				height,
+// 				anchor,
+// 			} = props[propName];
 
-			if ( ! isError && undefined !== path
-				&& typeof path !== 'string'
-			) {
-				isError = true;
-			}
+// 			if ( ! isError && undefined !== path
+// 				&& typeof path !== 'string'
+// 			) {
+// 				isError = true;
+// 			}
 
-			if ( ! isError && undefined !== width
-				&& ( typeof width !== 'number' || width < 0 )
-			) {
-				isError = true;
-			}
+// 			if ( ! isError && undefined !== width
+// 				&& ( typeof width !== 'number' || width < 0 )
+// 			) {
+// 				isError = true;
+// 			}
 
-			if ( ! isError && undefined !== height
-				&& ( typeof height !== 'number' || height < 0 )
-			) {
-				isError = true;
-			}
+// 			if ( ! isError && undefined !== height
+// 				&& ( typeof height !== 'number' || height < 0 )
+// 			) {
+// 				isError = true;
+// 			}
 
-			if ( ! isError && undefined !== anchor
-				&& ( ! Array.isArray( anchor ) || anchor.length !== 2 || ! [...anchor].reduce( ( acc, val ) => acc ? typeof val === 'number' : acc, true ) )
-			) {
-				isError = true;
-			}
+// 			if ( ! isError && undefined !== anchor
+// 				&& ( ! Array.isArray( anchor ) || anchor.length !== 2 || ! [...anchor].reduce( ( acc, val ) => acc ? typeof val === 'number' : acc, true ) )
+// 			) {
+// 				isError = true;
+// 			}
 
-			if ( isError ) {
-				return new Error( 'Invalid prop `' + propName + '` supplied to' + ' `' + componentName + '`. Validation failed.' );
-			}
-		}
-	},
-};
+// 			if ( isError ) {
+// 				return new Error( 'Invalid prop `' + propName + '` supplied to' + ' `' + componentName + '`. Validation failed.' );
+// 			}
+// 		}
+// 	},
+// };
 
 export default Marker;

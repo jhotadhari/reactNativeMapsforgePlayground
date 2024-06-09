@@ -21,9 +21,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import MapPropTypes from './MapPropTypes';
+import MapPropTypes from '../MapPropTypes.js';
 import { MapViewManager } from './MapViewManager.jsx';
-import useMapLayersCreated from '../../compose/useMapLayersCreated';
+import useMapLayersCreated from '../compose/useMapLayersCreated.js';
 const { MapContainerModule } = NativeModules;
 
 const createFragment = mapViewNativeTag =>
@@ -154,13 +154,13 @@ const MapContainer = ( {
 	</ScrollView>;
 };
 
-MapContainer.propTypes = {
-	width: PropTypes.number,
-	height: PropTypes.number,
-	center: MapPropTypes.latLong,
-	zoom: PropTypes.number,
-	minZoom: PropTypes.number,
-	maxZoom: PropTypes.number,
-};
+// MapContainer.propTypes = {
+// 	width: PropTypes.number,
+// 	height: PropTypes.number,
+// 	center: MapPropTypes.latLong,
+// 	zoom: PropTypes.number,
+// 	minZoom: PropTypes.number,
+// 	maxZoom: PropTypes.number,
+// };
 
 export default MapContainer;

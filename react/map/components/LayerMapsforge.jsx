@@ -5,18 +5,14 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
-import {
-	PixelRatio,
-	NativeModules,
-	NativeEventEmitter,
-} from 'react-native';
+import { NativeModules } from 'react-native';
 import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import usePrevious from './usePrevious';
-import useMapLayersCreated from '../../compose/useMapLayersCreated';
+import usePrevious from '../compose/usePrevious';
+import useMapLayersCreated from '../compose/useMapLayersCreated';
 
 const { MapLayerMapsforgeModule } = NativeModules;
 
@@ -30,6 +26,8 @@ const LayerMapsforge = ( {
 	// persistentCache,	// ??? TODO
 } ) => {
 
+
+	console.log( 'debug reactTreeIndex', reactTreeIndex ); // debug
 	renderTheme = renderTheme || 'DEFAULT';
 	renderStyle = renderStyle || '';
 	renderOverlays = renderOverlays || [];

@@ -25,13 +25,13 @@ import {
 /**
  * Internal dependencies
  */
-import '../../global.css';
+import '../../../global.css';
 import {
 	MapContainer,
 	LayerMapsforge,
 	Marker,
 	useRenderStyleOptions,
-} from './mapComponents';
+} from '../../map';
 import PickerModalControl from './PickerModalControl.jsx';
 const { MapContainerModule } = NativeModules;
 
@@ -188,7 +188,7 @@ const App = () => {
 				<MapContainer
 					height={ height }
 					center={ [
-						0, -78.2,
+						0, -78.2
 					] }
 					zoom={ 14 }
 					// minZoom={ 12 }
@@ -200,8 +200,8 @@ const App = () => {
 					{ showLayerMapsforge && <LayerMapsforge
 						mapFile={ mapFile }
 						renderTheme={ renderTheme }
-						renderStyle={ renderStyle }
-						renderOverlays={ renderOverlays }
+						// renderStyle={ renderStyle }
+						// renderOverlays={ renderOverlays }
 					/> }
 
 					{ showMarkers && <>

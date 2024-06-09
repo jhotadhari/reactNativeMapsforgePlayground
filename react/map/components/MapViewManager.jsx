@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import MapPropTypes from './MapPropTypes';
+import MapPropTypes from '../MapPropTypes';
 
 export const MapViewManager = requireNativeComponent(
 	'MapViewManager',
