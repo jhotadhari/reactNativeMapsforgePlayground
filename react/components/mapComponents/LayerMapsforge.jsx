@@ -1,6 +1,6 @@
- */
- * External dependencies
 /**
+ * External dependencies
+ */
 import React, {
 	useEffect,
 	useState,
@@ -108,8 +108,13 @@ const LayerMapsforge = ( {
 };
 LayerMapsforge.isMapLayer = true;
 
-// LayerMapsforge.propTypes = {
-
-// };
+LayerMapsforge.propTypes = {
+	mapViewNativeTag: PropTypes.number,
+	mapFile: PropTypes.string,
+	renderTheme: PropTypes.string,
+	reactTreeIndex: PropTypes.number,
+	renderStyle: PropTypes.string,
+	renderOverlays: PropTypes.array,
+};
 
 export default LayerMapsforge;

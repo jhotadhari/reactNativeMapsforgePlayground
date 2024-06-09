@@ -1,8 +1,16 @@
+/**
+ * External dependencies
+ */
 import {
 	requireNativeComponent,
 	ViewPropTypes,
 } from 'react-native';
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import MapPropTypes from './MapPropTypes';
 
 export const MapViewManager = requireNativeComponent(
 	'MapViewManager',
@@ -11,7 +19,7 @@ export const MapViewManager = requireNativeComponent(
 		propTypes: {
 			width: PropTypes.number,
 			height: PropTypes.number,
-			center: PropTypes.array,	// ??? should better validate
+			center: MapPropTypes.latLong,
 			zoom: PropTypes.number,
 			minZoom: PropTypes.number,
 			maxZoom: PropTypes.number,

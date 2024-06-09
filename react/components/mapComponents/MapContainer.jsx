@@ -1,3 +1,6 @@
+ */
+ * External dependencies
+/**
 import React, {
 	cloneElement,
 	useEffect,
@@ -13,7 +16,12 @@ import {
 	NativeEventEmitter,
 	NativeModules,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import MapPropTypes from './MapPropTypes';
 import { MapViewManager } from './MapViewManager.jsx';
 import useMapLayersCreated from '../../compose/useMapLayersCreated';
 const { MapContainerModule } = NativeModules;
@@ -126,6 +134,15 @@ const MapContainer = ( {
 		/>
 			{ wrappedChildren }
 	</ScrollView>;
+};
+
+MapContainer.propTypes = {
+	width: PropTypes.number,
+	height: PropTypes.number,
+	center: MapPropTypes.latLong,
+	zoom: PropTypes.number,
+	minZoom: PropTypes.number,
+	maxZoom: PropTypes.number,
 };
 
 export default MapContainer;

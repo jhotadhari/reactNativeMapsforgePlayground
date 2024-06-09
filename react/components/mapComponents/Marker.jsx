@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import React, {
 	useEffect,
 	useState,
@@ -10,8 +13,11 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import MapPropTypes from './MapPropTypes';
 import useMapLayersCreated from '../../compose/useMapLayersCreated';
-
 const { MapMarkerModule } = NativeModules;
 
 const defaultIconSize = PixelRatio.getPixelSizeForLayoutSize( 20 );
@@ -77,16 +83,8 @@ const Marker = ( {
 Marker.isMapLayer = true;
 
 Marker.propTypes = {
-	latLong: function( props, propName, componentName ) {
-		if (
-			! Array.isArray( props[propName] )																// is Array
-			|| props[propName].length !== 2																	// is length 2
-			|| ! [...props[propName]].reduce( ( acc, val ) => acc ? typeof val === 'number' : acc, true )	// all items is number
-		) {
-			return new Error( 'Invalid prop `' + propName + '` supplied to' + ' `' + componentName + '`. Validation failed.' );
-		}
-	},
-
+	mapViewNativeTag: PropTypes.number,
+	latLong: MapPropTypes.latLong,
 	icon: function( props, propName, componentName ) {
 		if ( undefined !== props[propName] ) {
 
