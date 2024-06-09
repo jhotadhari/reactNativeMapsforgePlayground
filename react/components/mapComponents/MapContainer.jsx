@@ -1,6 +1,6 @@
- */
- * External dependencies
 /**
+ * External dependencies
+ */
 import React, {
 	cloneElement,
 	useEffect,
@@ -43,10 +43,10 @@ const MapContainer = ( {
 	children,
 	width,		// ??? TODO doesn't react on prop change
 	height,		// ??? TODO doesn't react on prop change
-	center,		// ??? TODO doesn't react on prop change
+	center,
 	zoom,
-	minZoom,	// ??? TODO doesn't react on prop change
-	maxZoom,	// ??? TODO doesn't react on prop change
+	minZoom,
+	maxZoom,
 } ) => {
 
 	const ref = useRef( null );
@@ -80,6 +80,24 @@ const MapContainer = ( {
 			MapContainerModule.setZoom( mapViewNativeTag, zoom );
 		}
 	}, [zoom] );
+
+	useEffect( () => {
+		if ( mapLayersCreated && mapViewNativeTag ) {
+			MapContainerModule.setMinZoom( mapViewNativeTag, minZoom );
+		}
+	}, [minZoom] );
+
+	useEffect( () => {
+		if ( mapLayersCreated && mapViewNativeTag ) {
+			MapContainerModule.setMaxZoom( mapViewNativeTag, maxZoom );
+		}
+	}, [maxZoom] );
+
+	useEffect( () => {
+		if ( mapLayersCreated && mapViewNativeTag ) {
+			MapContainerModule.setCenter( mapViewNativeTag, center );
+		}
+	}, [center] );
 
 	useEffect( () => {
 		const eventEmitter = new NativeEventEmitter();
