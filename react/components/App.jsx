@@ -1,12 +1,11 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
 
+/**
+ * External dependencies
+ */
 import React, {
-	useContext, useEffect, useState,
+	useContext,
+	useEffect,
+	useState,
 } from 'react';
 import {
 	Button,
@@ -15,46 +14,51 @@ import {
 	Text,
 	useColorScheme,
 	NativeModules,
-	StyleSheet,
+	NativeEventEmitter,
 	useWindowDimensions,
 	PixelRatio,
 	View,
-	Alert,
-	Modal,
-	Pressable,
+
 } from 'react-native';
 
-import { Picker } from '@react-native-picker/picker';
 
-
+/**
+ * Internal dependencies
+ */
 import '../../global.css';
-
+import { MapContext } from '../MapContext';
 import {
 	MapContainer,
 	LayerMapsforge,
 	Marker,
+	useRenderStyleOptions,
 } from './mapComponents';
-import { MapContext } from '../MapContext';
+import PickerModalControl from './PickerModalControl.jsx';
 const { MapContainerModule } = NativeModules;
 
 
-// const Section = ( {
-// 	children,
-// 	title,
-// } ) => {
-// 	return (
-// 		<View className="mt-8 px-2">
-// 			<Text className="text-2xl text-black dark:text-white">
-// 				{title}
-// 			</Text>
 
-// 			<View>
-// 				{children}
-// 			</View>
-// 		</View>
-// 	);
-// };
+const icons = [
+	// '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_red.png',
+	// '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_white.png',
 
+	{
+		// width: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+		// height: PixelRatio.getPixelSizeForLayoutSize( 70 ),
+	},
+
+	{
+		path: '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_green.png',
+		width: PixelRatio.getPixelSizeForLayoutSize( 40 ),
+		height: PixelRatio.getPixelSizeForLayoutSize( 60 ),
+		anchor: [
+			0,
+			- PixelRatio.getPixelSizeForLayoutSize( 60 ) / 2,
+		],
+	},
+
+
+];
 
 const LiftViewIdStateUp = ( { setMainMapViewId } ) => {
 	const { mapViewNativeTag } = useContext( MapContext );
@@ -65,17 +69,15 @@ const LiftViewIdStateUp = ( { setMainMapViewId } ) => {
 };
 
 const renderThemeOptions = [
+	{ label: 'Elements', value: '/storage/emulated/0/Documents/orux/mapstyles/Elements.xml' },
+	{ label: 'Alti', value: '/storage/emulated/0/Documents/orux/mapstyles/Alti.xml' },
 	{ label: 'DEFAULT', value: 'DEFAULT' },
 	{ label: 'OSMARENDER', value: 'OSMARENDER' },
-	{ label: 'Alti', value: '/storage/emulated/0/Documents/orux/mapstyles/Alti.xml' },
-	{ label: 'Elements', value: '/storage/emulated/0/Documents/orux/mapstyles/Elements.xml' },
 ];
 
 const mapFileOptions = [
 	{ label: 'Ecuador', value: '/storage/emulated/0/Documents/orux/mapfiles/Ecuador_oam.osm.map' },
 	{ label: 'Colombia', value: '/storage/emulated/0/Documents/orux/mapfiles/Colombia_oam.osm.map' },
-
-
 ];
 
 
@@ -84,9 +86,8 @@ const App = () => {
 
 	const backgroundStyle = 'bg-neutral-300 dark:bg-slate-900';
 
-	const [
-		renderTheme, setRenderTheme,
-	] = useState( renderThemeOptions[0].value );
+
+
 	const [
 		mapFile, setMapFile,
 	] = useState( mapFileOptions[0].value );
@@ -105,16 +106,55 @@ const App = () => {
 		iconIndex, setIconIndex,
 	] = useState( 0 );
 
+
+
+
+
+
+
+
+    const [renderOverlayOptions, setRenderOverlayOptions] = useState( [] );
+
+    const [renderOverlays, setRenderOverlays] = useState( [] );
 	const [
-		modalVisible, setModalVisible,
-	] = useState( false );
+		renderTheme, setRenderTheme,
+	] = useState( renderThemeOptions[0].value );
+
+	const {
+		renderStyleDefaultId,
+		renderStyleOptions,
+	} = useRenderStyleOptions( ( {
+		renderTheme,
+		nativeTag: mainMapViewId,
+	} ) );
+
+	const [
+		renderStyle, setRenderStyle,
+	] = useState( renderStyleDefaultId );
+
+	useEffect( () => {
+		if ( ! renderStyle && renderStyleDefaultId ) {
+			setRenderStyle( renderStyleDefaultId );
+		}
+
+		if ( ! renderOverlayOptions.length ) {
+			const renderStyleOptions_ = renderStyleOptions.find( opt => opt.value === renderStyle  );
+			if ( undefined !== renderStyleOptions_ ) {
+				const newItems = Object.keys( renderStyleOptions_.options ).map( value => {
+					return {
+						value,
+						label: renderStyleOptions_.options[value],
+					}
+				} );
+				setRenderOverlayOptions( newItems );
+			}
+		}
+	}, [renderStyle,renderStyleDefaultId] );
 
 
-	// useEffect( () => {
-	// 	request( 'android.permission.MANAGE_EXTERNAL_STORAGE' ).then( ( result ) => {
-	// 		console.log( 'debug result', result ); // debug
-	// 	  } );
-	// }, [] );
+
+
+
 
 
 	const [
@@ -131,27 +171,6 @@ const App = () => {
 		],
 	] );
 
-	const icons = [
-		// '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_red.png',
-		// '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_white.png',
-
-		{
-			// width: PixelRatio.getPixelSizeForLayoutSize( 70 ),
-			// height: PixelRatio.getPixelSizeForLayoutSize( 70 ),
-		},
-
-		{
-			path: '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/marker_green.png',
-			width: PixelRatio.getPixelSizeForLayoutSize( 40 ),
-			height: PixelRatio.getPixelSizeForLayoutSize( 60 ),
-			anchor: [
-				0,
-				- PixelRatio.getPixelSizeForLayoutSize( 60 ) / 2,
-			],
-		},
-
-
-	];
 
 	const { height } = useWindowDimensions();
 
@@ -163,46 +182,17 @@ const App = () => {
 			/>
 
 
-			<Modal
-				animationType="slide"
-				transparent={ true }
-				visible={ modalVisible }
-				onRequestClose={ () => {
-					Alert.alert( 'Modal has been closed.' );
-					setModalVisible( !modalVisible );
-				} }
-			>
-				<View style={ styles.centeredView }>
-					<View style={ styles.modalView }>
-						<Text style={ styles.modalText }>Hello World!</Text>
-						<Pressable
-							style={ [
-								styles.button, styles.buttonClose,
-							] }
-							onPress={ () => setModalVisible( !modalVisible ) }
-						>
-							<Text style={ styles.textStyle }>Hide Modal</Text>
-						</Pressable>
-					</View>
-				</View>
-			</Modal>
 
 
-			{ ! modalVisible && <View className="bg-white dark:bg-black">
 
-				{/* <View style={ {
-						width: PixelRatio.getPixelSizeForLayoutSize( width ),
-						height: PixelRatio.getPixelSizeForLayoutSize( 100 ),
-						backgroundColor: '#00ff00',
-					} } /> */}
-
+			<View className="bg-white dark:bg-black">
 
 				<MapContainer
 					height={ height }
 					center={ [
 						0, -78.2,
 					] }
-					zoom={ 7 }
+					zoom={ 14 }
 					// minZoom={ 12 }
 					// maxZoom={ 18 }
 				>
@@ -210,9 +200,10 @@ const App = () => {
 					<LiftViewIdStateUp setMainMapViewId={ setMainMapViewId } />
 
 					{ showLayerMapsforge && <LayerMapsforge
-						// mapFile={ '/storage/emulated/0/Android/media/com.jhotadhari.reactNativeMapsforgePlayground/Berlin.map' }
 						mapFile={ mapFile }
 						renderTheme={ renderTheme }
+						renderStyle={ renderStyle }
+						renderOverlays={ renderOverlays }
 					/> }
 
 					{ showMarkers && <>
@@ -230,10 +221,19 @@ const App = () => {
 					</Text>;
 				} ) }
 
+			</View>
 
-			</View> }
+
+
+
+
+
+
+
 
 			<View className="bg-white dark:bg-black absolute top left flex flex-column w-full">
+
+
 				<View className="flex flex-row justify-around w-full">
 					<Button
 						onPress={ () => {
@@ -276,37 +276,58 @@ const App = () => {
 				</View>
 
 				<View className="flex flex-row justify-around w-full mt-5" style={ {
-					height: 60,
+					marginBottom: 10,
 				} }>
 
+					<PickerModalControl
+						headerLabel={ 'Map file' }
+						options={ mapFileOptions }
+						values={ [mapFile] }
+						onChange={ clickedVal => setMapFile( clickedVal ) }
+						closeOnChange={ false }
+					/>
 
-					<Picker
-						selectedValue={ mapFile }
-						style={ {
-							// height: 30,
-							width: 250,
-						} }
-						mode={ 'dialog' }
-						onValueChange={ value => setMapFile( value ) }
-					>
-						{ [...mapFileOptions].map( opt => {
-							return <Picker.Item key={ opt.value } label={ opt.label } value={ opt.value } />
-						} ) }
-					</Picker>
+					<PickerModalControl
+						headerLabel={ 'Render theme' }
+						options={ renderThemeOptions }
+						values={ [renderTheme] }
+						onChange={ clickedVal => setRenderTheme( clickedVal ) }
+						closeOnChange={ false }
+					/>
 
-					<Picker
-						selectedValue={ renderTheme }
-						style={ {
-							// height: 30,
-							width: 250,
+					<PickerModalControl
+						headerLabel={ 'Render style' }
+						disabled={ ! renderStyleOptions.length }
+						buttonLabelFallback={ 'Flavour' }
+						options={ renderStyleOptions }
+						values={ [renderStyle] }
+						onChange={ clickedVal => setRenderStyle( clickedVal ) }
+						closeOnChange={ false }
+					/>
+
+					<PickerModalControl
+						multiple={ true }
+						buttonLabel={ 'options' }
+						headerLabel={ 'Render style options' }
+						disabled={ ! renderStyleOptions.length }
+						buttonLabelFallback={ 'test' }
+						options={ renderOverlayOptions }
+						values={ renderOverlays }
+						onChange={ clickedVal => {
+							const existingIndex = renderOverlays.findIndex( val => val === clickedVal );
+							if ( -1 === existingIndex ) {
+								setRenderOverlays( [
+									...renderOverlays,
+									clickedVal,
+								] );
+							} else {
+								const newSelectedItems = [...renderOverlays];
+								newSelectedItems.splice( existingIndex, 1 );
+								setRenderOverlays( newSelectedItems );
+							}
 						} }
-						mode={ 'dialog' }
-						onValueChange={ value => setRenderTheme( value ) }
-					>
-						{ [...renderThemeOptions].map( opt => {
-							return <Picker.Item key={ opt.value } label={ opt.label } value={ opt.value } />
-						} ) }
-					</Picker>
+						closeOnChange={ false }
+					/>
 
 				</View>
 
@@ -315,47 +336,4 @@ const App = () => {
 	);
 };
 
-
-
-const styles = StyleSheet.create( {
-	centeredView: {
-	  flex: 1,
-	  justifyContent: 'center',
-	  alignItems: 'center',
-	  marginTop: 22,
-	},
-	modalView: {
-	  margin: 20,
-	  backgroundColor: 'white',
-	  borderRadius: 20,
-	  padding: 35,
-	  alignItems: 'center',
-	  shadowColor: '#000',
-	  shadowOffset: {
-			width: 0,
-			height: 2,
-	  },
-	  shadowOpacity: 0.25,
-	  shadowRadius: 4,
-	  elevation: 5,
-	},
-	button: {
-	  borderRadius: 20,
-	  padding: 10,
-	  elevation: 2,
-	},
-	buttonOpen: { backgroundColor: '#F194FF' },
-	buttonClose: { backgroundColor: '#2196F3' },
-	textStyle: {
-	  color: 'white',
-	  fontWeight: 'bold',
-	  textAlign: 'center',
-	},
-	modalText: {
-	  marginBottom: 15,
-	  textAlign: 'center',
-	},
-} );
-
 export default App;
-
