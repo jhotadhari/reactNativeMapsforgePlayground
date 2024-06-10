@@ -25,9 +25,13 @@ const defaultIconSize = PixelRatio.getPixelSizeForLayoutSize( 20 );
 const Marker = ( {
 	mapViewNativeTag,
 	latLong,
+	onTab,
+	tabDistanceThreshold,
 	icon,
 	reactTreeIndex,
 } ) => {
+
+	tabDistanceThreshold = tabDistanceThreshold || 50;
 
 	const iconWithDefaults = {
 		width: defaultIconSize,		// number
@@ -48,7 +52,13 @@ const Marker = ( {
 	useEffect( () => {
 		if ( mapLayersCreated && null === hash && mapViewNativeTag ) {
 			setHash( false );
-			MapMarkerModule.createMarker( mapViewNativeTag, latLong, iconWithDefaults, reactTreeIndex ).then( newHash => {
+			MapMarkerModule.createMarker(
+				mapViewNativeTag,
+				( !! onTab && tabDistanceThreshold > 0 ? tabDistanceThreshold : 0 ),
+				latLong,
+				iconWithDefaults,
+				reactTreeIndex
+			).then( newHash => {
 				if ( newHash ) {
 					setHash( newHash );
 				}
@@ -77,55 +87,71 @@ const Marker = ( {
 		}
 	}, [icon] );
 
+	useEffect( () => {
+		if ( onTab && hash && mapViewNativeTag ) {
+			const eventEmitter = new NativeEventEmitter();
+			let eventListener = eventEmitter.addListener( 'MarkerTouch', result => {
+				if ( result.hash == hash ) {
+					onTab( result );
+				}
+			} );
+			return () => {
+				eventListener.remove();
+			};
+		}
+	}, [mapViewNativeTag,hash] );
+
 	return null;
 };
 
 Marker.isMapLayer = true;
 
-// Marker.propTypes = {
-// 	mapViewNativeTag: PropTypes.number,
-// 	latLong: MapPropTypes.latLong,
-// 	icon: function( props, propName, componentName ) {
-// 		if ( undefined !== props[propName] ) {
+Marker.propTypes = {
+	mapViewNativeTag: PropTypes.number,
+	latLong: MapPropTypes.latLong,
+	onTab: PropTypes.func,
+	tabDistanceThreshold: PropTypes.number,
+	icon: function( props, propName, componentName ) {
+		if ( undefined !== props[propName] ) {
 
-// 			let isError = typeof props[propName] !== 'object';
+			let isError = typeof props[propName] !== 'object';
 
-// 			const {
-// 				path,
-// 				width,
-// 				height,
-// 				anchor,
-// 			} = props[propName];
+			const {
+				path,
+				width,
+				height,
+				anchor,
+			} = props[propName];
 
-// 			if ( ! isError && undefined !== path
-// 				&& typeof path !== 'string'
-// 			) {
-// 				isError = true;
-// 			}
+			if ( ! isError && undefined !== path
+				&& typeof path !== 'string'
+			) {
+				isError = true;
+			}
 
-// 			if ( ! isError && undefined !== width
-// 				&& ( typeof width !== 'number' || width < 0 )
-// 			) {
-// 				isError = true;
-// 			}
+			if ( ! isError && undefined !== width
+				&& ( typeof width !== 'number' || width < 0 )
+			) {
+				isError = true;
+			}
 
-// 			if ( ! isError && undefined !== height
-// 				&& ( typeof height !== 'number' || height < 0 )
-// 			) {
-// 				isError = true;
-// 			}
+			if ( ! isError && undefined !== height
+				&& ( typeof height !== 'number' || height < 0 )
+			) {
+				isError = true;
+			}
 
-// 			if ( ! isError && undefined !== anchor
-// 				&& ( ! Array.isArray( anchor ) || anchor.length !== 2 || ! [...anchor].reduce( ( acc, val ) => acc ? typeof val === 'number' : acc, true ) )
-// 			) {
-// 				isError = true;
-// 			}
+			if ( ! isError && undefined !== anchor
+				&& ( ! Array.isArray( anchor ) || anchor.length !== 2 || ! [...anchor].reduce( ( acc, val ) => acc ? typeof val === 'number' : acc, true ) )
+			) {
+				isError = true;
+			}
 
-// 			if ( isError ) {
-// 				return new Error( 'Invalid prop `' + propName + '` supplied to' + ' `' + componentName + '`. Validation failed.' );
-// 			}
-// 		}
-// 	},
-// };
+			if ( isError ) {
+				return new Error( 'Invalid prop `' + propName + '` supplied to' + ' `' + componentName + '`. Validation failed.' );
+			}
+		}
+	},
+};
 
 export default Marker;

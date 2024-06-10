@@ -208,7 +208,11 @@ const App = () => {
 						{ [...locations].map( ( latLong, index ) => <Marker
 							latLong={ latLong }
 							key={ index }
+							tabDistanceThreshold={ 80 }
 							icon={ icons[iconIndex] }
+							onTab={ res => {
+								console.log( 'debug res', res ); // debug
+							} }
 						/> ) }
 					</> }
 				</MapContainer>
