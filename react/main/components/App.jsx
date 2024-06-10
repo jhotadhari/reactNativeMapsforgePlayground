@@ -217,15 +217,7 @@ const App = () => {
 					</> }
 				</MapContainer>
 
-				{ Object.keys( Array.from( Array( 5 ) ) ).map( ( v, index ) => {
-					return <Text key={ index } className="mt-2 text-lg text-black dark:text-white">
-						{ 'test' + index }
-					</Text>;
-				} ) }
-
 			</View>
-
-
 
 
 

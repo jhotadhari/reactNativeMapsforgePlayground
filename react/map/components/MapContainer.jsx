@@ -154,13 +154,13 @@ const MapContainer = ( {
 	</ScrollView>;
 };
 
-// MapContainer.propTypes = {
-// 	width: PropTypes.number,
-// 	height: PropTypes.number,
-// 	center: MapPropTypes.latLong,
-// 	zoom: PropTypes.number,
-// 	minZoom: PropTypes.number,
-// 	maxZoom: PropTypes.number,
-// };
+MapContainer.propTypes = {
+	width: PropTypes.number,
+	height: PropTypes.number,
+	center: MapPropTypes.latLong,
+	zoom: PropTypes.number,
+	minZoom: PropTypes.number,
+	maxZoom: PropTypes.number,
+};
 
 export default MapContainer;
