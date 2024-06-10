@@ -126,12 +126,12 @@ const MapContainer = ( {
 	let lastIndex = -1;
 	const wrapChildren = children => ! children || ! ref?.current?._nativeTag ? null : React.Children.map( children, ( child, index ) => {
 		lastIndex = child?.type?.isMapLayer ? lastIndex + 1 : lastIndex;
-		const newChild = child ? cloneElement(
+		const newChild = child && child.type ? cloneElement(
 			child,
 			{
 				mapViewNativeTag: ref?.current?._nativeTag,
 				...( child.type.isMapLayer && { reactTreeIndex: lastIndex } ),
-				...( child.props.children && { children: wrapChildren( child.props.children ) } ),
+				...( child?.props?.children && { children: wrapChildren( child.props.children ) } ),
 			},
 		) : child;
 		return newChild;

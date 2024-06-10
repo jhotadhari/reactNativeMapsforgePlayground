@@ -5,6 +5,7 @@
 import React, {
 	useContext,
 	useEffect,
+	useRef,
 	useState,
 } from 'react';
 import {
@@ -18,8 +19,8 @@ import {
 	useWindowDimensions,
 	PixelRatio,
 	View,
-
 } from 'react-native';
+import useResizeObserver from '@react-hook/resize-observer'
 
 
 /**
@@ -32,6 +33,7 @@ import {
 	Marker,
 	useRenderStyleOptions,
 } from '../../map';
+import ExampleMarkerPopup from './ExampleMarkerPopup.jsx';
 import PickerModalControl from './PickerModalControl.jsx';
 const { MapContainerModule } = NativeModules;
 
@@ -179,10 +181,6 @@ const App = () => {
 				backgroundColor={ backgroundStyle.backgroundColor }
 			/>
 
-
-
-
-
 			<View className="bg-white dark:bg-black">
 
 				<MapContainer
@@ -190,7 +188,7 @@ const App = () => {
 					center={ [
 						0, -78.2
 					] }
-					zoom={ 14 }
+					zoom={ 11 }
 					// minZoom={ 12 }
 					// maxZoom={ 18 }
 				>
@@ -205,28 +203,28 @@ const App = () => {
 					/> }
 
 					{ showMarkers && <>
-						{ [...locations].map( ( latLong, index ) => <Marker
-							latLong={ latLong }
-							key={ index }
-							tabDistanceThreshold={ 80 }
-							icon={ icons[iconIndex] }
-							onTab={ res => {
-								console.log( 'debug res', res ); // debug
-							} }
-						/> ) }
+						{ [...locations].map( ( latLong, index ) => index % 2 != 0
+							? <ExampleMarkerPopup
+								key={ index }
+								mapViewNativeTag={ mainMapViewId }
+								latLong={ latLong }
+							/>
+							: <Marker
+								latLong={ latLong }
+								key={ index }
+								tabDistanceThreshold={ 80 }
+								icon={ icons[iconIndex] }
+								onTab={ res => {
+									console.log( 'debug res', res ); // debug
+								} }
+							/>
+						) }
 					</> }
 				</MapContainer>
 
 			</View>
 
-
-
-
-
-
-
 			<View className="bg-white dark:bg-black absolute top left flex flex-column w-full">
-
 
 				<View className="flex flex-row justify-around w-full">
 					<Button

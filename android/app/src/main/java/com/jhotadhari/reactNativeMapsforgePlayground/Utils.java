@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -42,6 +43,12 @@ public class Utils {
         }
     }
 
+    public static double convertPixelsToDp(ReactContext reactContext, double pixels) {
+        double screenPixelDensity = reactContext.getApplicationContext().getResources().getDisplayMetrics().density;
+        return pixels / screenPixelDensity;
+    }
+
+
     public static void sendEvent( ReactContext reactContext, String eventName, @Nullable WritableMap params ) {
         reactContext.getJSModule(
                 DeviceEventManagerModule.RCTDeviceEventEmitter.class
@@ -53,6 +60,13 @@ public class Utils {
         latLongArray.pushDouble( latLong.getLatitude() );
         latLongArray.pushDouble( latLong.getLongitude() );
         return latLongArray;
+    }
+
+    public static LatLong arrayToLatLong( ReadableArray latLong ) {
+        return new LatLong(
+            (Double) latLong.toArrayList().get(0),
+            (Double) latLong.toArrayList().get(1)
+        );
     }
 
     public static WritableMap pointToObj( Point point ) {
