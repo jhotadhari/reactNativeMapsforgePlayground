@@ -15,14 +15,21 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 
 import org.mapsforge.core.graphics.Color;
-import org.mapsforge.map.layer.overlay.Marker;
-import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.map.android.view.MapView;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.ticofab.androidgpxparser.parser.GPXParser;
+import io.ticofab.androidgpxparser.parser.domain.Gpx;
+import io.ticofab.androidgpxparser.parser.domain.TrackPoint;
 
 public class MapPolylineModule extends ReactContextBaseJavaModule {
 
@@ -62,7 +69,7 @@ public class MapPolylineModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void create(int reactTag, int tabDistanceThreshold, ReadableArray positions, int reactTreeIndex, Promise promise ) {
+    public void create(int reactTag, int tabDistanceThreshold, ReadableArray positions, String filePath, int reactTreeIndex, Promise promise ) {
         try {
             MapView mapView = (MapView) Utils.getMapView( this.getReactApplicationContext(), reactTag );
             if ( null == mapView ) {
@@ -85,7 +92,35 @@ public class MapPolylineModule extends ReactContextBaseJavaModule {
                 true
             );
 
-            feature.setPoints(positionsTolatLongsList(positions));
+            if ( null != positions && positions.size() > 0 ) {
+                feature.setPoints(positionsTolatLongsList(positions));
+            } else if ( filePath != null && filePath.length() > 0 && filePath.startsWith( "/" ) && filePath.endsWith( ".gpx" ) ) {
+                File gpxFile = new File( filePath );
+                if( gpxFile.exists() ) {
+                    GPXParser parser = new GPXParser();
+                    Gpx parsedGpx = null;
+                    try {
+                        InputStream in = new FileInputStream(gpxFile);
+                        parsedGpx = parser.parse(in); // consider using a background thread
+                    } catch (IOException | XmlPullParserException e) {
+                        // do something with this exception
+                        e.printStackTrace();
+                    }
+                    if (parsedGpx == null) {
+                        promise.resolve(false);
+                        return;
+                    } else {
+                        List points = parsedGpx.getTracks().get(0).getTrackSegments().get(0).getTrackPoints();
+                        for (int index = 0; index < points.size(); index++) {
+                            TrackPoint point = (TrackPoint) points.get( index );
+                            feature.addPoint( new LatLong(
+                                (Double) point.getLatitude(),
+                                (Double) point.getLongitude()
+                            ) );
+                        }
+                    }
+                }
+            }
 
             mapView.getLayerManager().getLayers().add(
                     Math.min( mapView.getLayerManager().getLayers().size(), (int) reactTreeIndex ),

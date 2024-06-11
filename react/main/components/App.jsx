@@ -204,7 +204,8 @@ const App = () => {
 					/> }
 
 					<Polyline
-						positions={ locations }
+						// positions={ locations }
+						file={ '/storage/emulated/0/Documents/orux/tracklogs/2024-06-10 1713__20240610_1713.gpx' }
 						onTab={ res => {
 							console.log( 'debug Polyline res', res ); // debug
 						} }

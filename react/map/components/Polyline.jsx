@@ -22,6 +22,7 @@ const { MapPolylineModule } = NativeModules;
 const Polyline = ( {
 	mapViewNativeTag,
 	positions,
+	file,
 	onTab,
 	tabDistanceThreshold,
 	reactTreeIndex,
@@ -40,6 +41,7 @@ const Polyline = ( {
 			mapViewNativeTag,
 			( !! onTab && tabDistanceThreshold > 0 ? tabDistanceThreshold : 0 ),
 			positions,
+			file,
 			reactTreeIndex
 		).then( newHash => {
 			if ( newHash ) {
