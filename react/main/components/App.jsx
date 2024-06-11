@@ -31,6 +31,7 @@ import {
 	MapContainer,
 	LayerMapsforge,
 	Marker,
+	Polyline,
 	useRenderStyleOptions,
 } from '../../map';
 import ExampleMarkerPopup from './ExampleMarkerPopup.jsx';
@@ -186,9 +187,9 @@ const App = () => {
 				<MapContainer
 					height={ height }
 					center={ [
-						0, -78.2
+						-0.22, -78.5
 					] }
-					zoom={ 11 }
+					zoom={ 13 }
 					// minZoom={ 12 }
 					// maxZoom={ 18 }
 				>
@@ -201,6 +202,13 @@ const App = () => {
 						renderStyle={ renderStyle }
 						renderOverlays={ renderOverlays }
 					/> }
+
+					<Polyline
+						positions={ locations }
+						onTab={ res => {
+							console.log( 'debug Polyline res', res ); // debug
+						} }
+					/>
 
 					{ showMarkers && <>
 						{ [...locations].map( ( latLong, index ) => index % 2 != 0
@@ -215,7 +223,7 @@ const App = () => {
 								tabDistanceThreshold={ 80 }
 								icon={ icons[iconIndex] }
 								onTab={ res => {
-									console.log( 'debug res', res ); // debug
+									console.log( 'debug Marker res', res ); // debug
 								} }
 							/>
 						) }

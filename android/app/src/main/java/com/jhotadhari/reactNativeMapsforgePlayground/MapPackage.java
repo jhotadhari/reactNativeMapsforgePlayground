@@ -26,6 +26,7 @@ public class MapPackage implements ReactPackage {
         modules.add(new MapLayerMapsforgeModule(reactContext));
         modules.add(new MapMarkerModule(reactContext));
         modules.add(new MapFeatureReactModule(reactContext));
+        modules.add(new MapPolylineModule(reactContext));
         return modules;
     }
 

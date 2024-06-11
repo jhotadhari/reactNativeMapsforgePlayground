@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -14,6 +15,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.android.view.MapView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Utils {
 
@@ -62,6 +66,12 @@ public class Utils {
         return latLongArray;
     }
 
+    public static LatLong aarrayToLatLong( ReadableArray latLong ) {
+        return new LatLong(
+            (Double) latLong.toArrayList().get(0),
+            (Double) latLong.toArrayList().get(1)
+        );
+    }
     public static LatLong arrayToLatLong( ReadableArray latLong ) {
         return new LatLong(
             (Double) latLong.toArrayList().get(0),
