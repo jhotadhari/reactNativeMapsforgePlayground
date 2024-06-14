@@ -20,8 +20,6 @@ import {
 	PixelRatio,
 	View,
 } from 'react-native';
-import useResizeObserver from '@react-hook/resize-observer'
-
 
 /**
  * Internal dependencies
@@ -33,8 +31,8 @@ import {
 	Marker,
 	Polyline,
 	useRenderStyleOptions,
-} from '../../map';
-import ExampleMarkerPopup from './ExampleMarkerPopup.jsx';
+} from 'react-native-mapsforge';
+// import ExampleMarkerPopup from './ExampleMarkerPopup.jsx';
 import PickerModalControl from './PickerModalControl.jsx';
 const { MapContainerModule } = NativeModules;
 
@@ -194,7 +192,7 @@ const App = () => {
 					// maxZoom={ 18 }
 				>
 
-					<LiftViewIdStateUp setMainMapViewId={ setMainMapViewId } />
+					{/* <LiftViewIdStateUp setMainMapViewId={ setMainMapViewId } /> */}
 
 					{ showLayerMapsforge && <LayerMapsforge
 						mapFile={ mapFile }
@@ -203,31 +201,24 @@ const App = () => {
 						renderOverlays={ renderOverlays }
 					/> }
 
-					<Polyline
+					{/* <Polyline
 						// positions={ locations }
 						file={ '/storage/emulated/0/Documents/orux/tracklogs/2024-06-10 1713__20240610_1713.gpx' }
 						onTab={ res => {
 							console.log( 'debug Polyline res', res ); // debug
 						} }
-					/>
+					/> */}
 
 					{ showMarkers && <>
-						{ [...locations].map( ( latLong, index ) => index % 2 != 0
-							? <ExampleMarkerPopup
-								key={ index }
-								mapViewNativeTag={ mainMapViewId }
-								latLong={ latLong }
-							/>
-							: <Marker
-								latLong={ latLong }
-								key={ index }
-								tabDistanceThreshold={ 80 }
-								icon={ icons[iconIndex] }
-								onTab={ res => {
-									console.log( 'debug Marker res', res ); // debug
-								} }
-							/>
-						) }
+						{ [...locations].map( ( latLong, index ) => <Marker
+							latLong={ latLong }
+							key={ index }
+							tabDistanceThreshold={ 80 }
+							icon={ icons[iconIndex] }
+							onTab={ res => {
+								console.log( 'debug Marker res', res ); // debug
+							} }
+						/> ) }
 					</> }
 				</MapContainer>
 
