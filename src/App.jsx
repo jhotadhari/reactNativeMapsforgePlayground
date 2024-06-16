@@ -35,6 +35,9 @@ const { MapContainerModule } = nativeMapModules;
 /**
  * Internal dependencies
  */
+import DirPickerModalControl from './components/DirPickerModalControl.jsx';
+import FilesFromDirPickerModalControl from './components/FilesFromDirPickerModalControl.jsx';
+import PickerModalControl from './components/PickerModalControl.jsx';
 import usePermissionsOk from './compose/usePermissionsOk.jsx';
 import { randomNumber } from './utils';
 
@@ -66,18 +69,6 @@ const LiftViewIdStateUp = ( { mapViewNativeTag, setMainMapViewId } ) => {
 	return null;
 };
 
-const renderThemeOptions = [
-	{ label: 'Elements', value: '/storage/emulated/0/Documents/orux/mapstyles/Elements.xml' },
-	{ label: 'Alti', value: '/storage/emulated/0/Documents/orux/mapstyles/Alti.xml' },
-	{ label: 'DEFAULT', value: 'DEFAULT' },
-	{ label: 'OSMARENDER', value: 'OSMARENDER' },
-];
-
-const mapFileOptions = [
-	{ label: 'Ecuador', value: '/storage/emulated/0/Documents/orux/mapfiles/Ecuador_oam.osm.map' },
-	{ label: 'Colombia', value: '/storage/emulated/0/Documents/orux/mapfiles/Colombia_oam.osm.map' },
-];
-
 const App = () => {
 
 	const isDarkMode = useColorScheme() === 'dark';
@@ -91,7 +82,7 @@ const App = () => {
 
 	const promiseQueueState = usePromiseQueueState();
 
-	const [mapFile, setMapFile] = useState( mapFileOptions[0].value );
+	const [mapFile, setMapFile] = useState( null );
 	const [showLayerMapsforge, setShowLayerMapsforge] = useState( true );
 	const [showMarkers, setShowMarkers] = useState( true );
 
@@ -102,10 +93,11 @@ const App = () => {
 	const [renderOverlayOptions, setRenderOverlayOptions] = useState( [] );
 
 	const [renderOverlays, setRenderOverlays] = useState( [] );
-	const [renderTheme, setRenderTheme] = useState( renderThemeOptions[0].value );
+	const [renderTheme, setRenderTheme] = useState( null );
 
 
 	const [mapFilesDir, setMapFilesDir] = useState(  '/storage/emulated/0/Download' );
+	const [styleFilesDir, setStyleFilesDir] = useState(  '/storage/emulated/0/Download' );
 
 	const {
 		renderStyleDefaultId,
@@ -193,16 +185,16 @@ const App = () => {
 						renderTheme={ renderTheme }
 						renderStyle={ renderStyle }
 						renderOverlays={ renderOverlays }
-						// cachePersistence={ 0 }
+						cachePersistence={ 0 }
 					/> }
 
-					<Polyline
+					{/* <Polyline
 						// positions={ locations }
 						file={ '/storage/emulated/0/Documents/orux/tracklogs/2024-06-10 1713__20240610_1713.gpx' }
 						onTab={ res => {
 							console.log( 'debug Polyline res', res ); // debug
 						} }
-					/>
+					/> */}
 
 					{ showMarkers && [...locations].map( ( latLong, index ) => <Marker
 						latLong={ latLong }
@@ -312,13 +304,56 @@ const App = () => {
 					} }
 				>
 
+					<DirPickerModalControl
+						value={ mapFilesDir }
+						buttonLabel={ 'Map dir' }
+						headerLabel={ 'Map files dir' }
+						onSelect={ dir => setMapFilesDir( dir ) }
+						closeOnChange={ true }
+						disabled={ promiseQueueState > 0 }
 
-					{/* <PickerModalControl
-						headerLabel={ 'Render theme' }
-						options={ renderThemeOptions }
+					/>
+
+					<FilesFromDirPickerModalControl
+						headerLabel={ 'Map file' }
+						dir={ mapFilesDir }
+						filePattern={ /.*\.map$/ }
+						values={ [mapFile] }
+						onChange={ clickedVal => setMapFile( clickedVal ) }
+						closeOnChange={ true }
+						disabled={ promiseQueueState > 0 }
+					/>
+
+				</View>
+
+				<View
+					style={ {
+						...style,
+						flexDirection: 'row',
+						justifyContent: 'space-evenly',
+						alignItems: 'center',
+						width,
+						marginBottom: 10,
+					} }
+				>
+
+					<DirPickerModalControl
+						value={ styleFilesDir }
+						buttonLabel={ 'Style dir' }
+						headerLabel={ 'Style files dir' }
+						onSelect={ dir => setStyleFilesDir( dir ) }
+						closeOnChange={ true }
+						disabled={ promiseQueueState > 0 }
+
+					/>
+
+					<FilesFromDirPickerModalControl
+						headerLabel={ 'Style file' }
+						dir={ styleFilesDir }
+						filePattern={ /.*\.xml$/ }
 						values={ [renderTheme] }
 						onChange={ clickedVal => setRenderTheme( clickedVal ) }
-						closeOnChange={ false }
+						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
 					/>
 
@@ -354,7 +389,7 @@ const App = () => {
 							}
 						} }
 						closeOnChange={ false }
-					/> */}
+					/>
 
 				</View>
 
