@@ -1,7 +1,8 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { sortBy } from 'lodash-es';
 
 /**
  * Internal dependencies
@@ -22,13 +23,18 @@ const FilesFromDirPickerModalControl = ( {
 	itemHeight,
 } ) => {
 
-	const { navChildren } = useDirInfo( dir || null );
+    const { navChildren } = useDirInfo( dir || null );
 
-	const options = Array.isArray( navChildren )
-        ? [...navChildren].filter( file => filePattern ? filePattern.test( file.name ) : true ).map( file => {
-            return { value: file.name, label: file.name.split( '/' ).reverse()[0] };
-        } )
-        : [];
+    const [options,setOptions] = useState( [] );
+
+    useEffect( () => {
+        const newOptions = Array.isArray( navChildren )
+            ? sortBy( [...navChildren].filter( file => filePattern ? filePattern.test( file.name ) : true ), 'name' ).map( file => {
+                return { value: file.name, label: file.name.split( '/' ).reverse()[0] };
+            } )
+            : [];
+        setOptions( newOptions );
+    }, [navChildren] );
 
 	return <PickerModalControl
         options={ options }

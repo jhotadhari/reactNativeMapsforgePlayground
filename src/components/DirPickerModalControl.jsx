@@ -2,6 +2,7 @@
  * External dependencies
  */
 import React, { useState, useEffect } from 'react';
+import { sortBy } from 'lodash-es';
 import {
 	Button,
 	FlatList,
@@ -55,13 +56,11 @@ const DirPickerModalControl = ( {
 	const { navParent, navChildren } = useDirInfo( navDir );
 
 
-	console.log( 'debug navParent, navChildren', navParent, navChildren ); // debug
-
 	const { height, width } = useWindowDimensions();
 
 	itemHeight = itemHeight || 45;
 
-	const options = Array.isArray( navChildren ) ? [...navChildren].filter( file => file.isDir ).map( file => {
+	const options = Array.isArray( navChildren ) ? sortBy( [...navChildren].filter( file => file.isDir ), 'name' ).map( file => {
 
 		return { value: file.name, label: file.name.split( '/' ).reverse()[0] };
 

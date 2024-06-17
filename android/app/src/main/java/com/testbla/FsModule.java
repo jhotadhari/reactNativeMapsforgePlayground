@@ -41,28 +41,23 @@ public class FsModule extends ReactContextBaseJavaModule {
         Log.d( "navDir", String.valueOf( navDir ) );
         try {
             WritableMap response = new WritableNativeMap();
+            File path = new File( navDir );
 
+            // Check permissions
             if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && ! Environment.isExternalStorageManager() ) {
             	response.putBoolean( "needExternalStorageManager", true );
             	promise.resolve( response );
 				return;
             }
 
-
-
-			File path = new File( navDir );
-//			Log.d( "path", String.valueOf( path.toString() ) );
-
-
-//
+            // navParent
 			response.putString( "navParent", String.valueOf( path.getParent() ) );
-//			Log.d( "navDir", String.valueOf( path.getParent() ) );
+
+            // navChildren
             WritableArray navChildrenArray = new WritableNativeArray();
-//            Log.d( "isDirectory", String.valueOf( path.isDirectory() ) );
             if ( path.isDirectory() ) {
                 File[] files = path.listFiles();
                 for (int i = 0; i < files.length; i++) {
-//        			Log.d( "bla[i]", String.valueOf( files[i].toString() ) );
                     WritableMap fileInfoMap = new WritableNativeMap();
                     fileInfoMap.putString( "name", files[i].toString() );
                     fileInfoMap.putBoolean( "isDir", files[i].isDirectory() );
@@ -74,6 +69,8 @@ public class FsModule extends ReactContextBaseJavaModule {
 
             }
 			response.putArray( "navChildren", navChildrenArray );
+
+            // Return response
             promise.resolve( response );
         } catch(Exception e) {
             promise.reject("Error", e);

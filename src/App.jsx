@@ -16,6 +16,8 @@ import {
 	PixelRatio,
 	View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getApplicationName } from 'react-native-device-info';
 
 /**
  * react-native-mapsforge dependencies
@@ -30,7 +32,6 @@ import {
 	useRenderStyleOptions,
 	nativeMapModules,
 } from 'react-native-mapsforge';
-const { MapContainerModule } = nativeMapModules;
 
 /**
  * Internal dependencies
@@ -41,26 +42,7 @@ import PickerModalControl from './components/PickerModalControl.jsx';
 import usePermissionsOk from './compose/usePermissionsOk.jsx';
 import { randomNumber } from './utils';
 
-const iconMarkerBase = {
-	width: PixelRatio.getPixelSizeForLayoutSize( 40 ),
-	height: PixelRatio.getPixelSizeForLayoutSize( 60 ),
-	anchor: [
-		0,
-		-PixelRatio.getPixelSizeForLayoutSize( 60 ) / 2,
-	],
-};
 
-const icons = [
-	{},		// fallback to default icon.
-	{
-		...iconMarkerBase,
-		path: '/storage/emulated/0/Android/media/com.jhotadhari.reactnative.mapsforgeExample/dummy/marker_green.png',
-	},
-	{
-		...iconMarkerBase,
-		path: '/storage/emulated/0/Android/media/com.jhotadhari.reactnative.mapsforgeExample/dummy/marker_red.png',
-	},
-];
 
 const LiftViewIdStateUp = ( { mapViewNativeTag, setMainMapViewId } ) => {
 	useEffect( () => {
@@ -69,9 +51,14 @@ const LiftViewIdStateUp = ( { mapViewNativeTag, setMainMapViewId } ) => {
 	return null;
 };
 
+const varNameToStoreKey = ( varName, appName ) => '@' + appName + '_' + varName;
+const storeKeyToVarName = ( storeKey, appName ) => storeKey.replace( '@' + appName + '_', '' );
+
 const App = () => {
 
 	const isDarkMode = useColorScheme() === 'dark';
+
+	const { width, height } = useWindowDimensions();
 
 	const style = {
 		backgroundColor: isDarkMode ? 'black' : '#eee',
@@ -82,23 +69,24 @@ const App = () => {
 
 	const promiseQueueState = usePromiseQueueState();
 
-	const [mapFile, setMapFile] = useState( null );
-	const [showLayerMapsforge, setShowLayerMapsforge] = useState( true );
-	const [showMarkers, setShowMarkers] = useState( true );
-
 	const [mainMapViewId, setMainMapViewId] = useState( null );
 
-	const [iconIndex, setIconIndex] = useState( 0 );
-
+	// The options for the control component.
 	const [renderOverlayOptions, setRenderOverlayOptions] = useState( [] );
 
-	const [renderOverlays, setRenderOverlays] = useState( [] );
-	const [renderTheme, setRenderTheme] = useState( null );
-
+	// Get appname on start.
+	const [appName, setAppName] = useState( null );
+	useEffect( () => {
+		setAppName( getApplicationName() );
+	}, [] );
 
 	const [mapFilesDir, setMapFilesDir] = useState(  '/storage/emulated/0/Download' );
 	const [styleFilesDir, setStyleFilesDir] = useState(  '/storage/emulated/0/Download' );
+	const [mapFile, setMapFile] = useState( null );
+	const [renderOverlays, setRenderOverlays] = useState( [] );
+	const [renderTheme, setRenderTheme] = useState( null );
 
+	// Get renderStyleDefaultId, renderStyleOptions from style sheet xml when Mapsforge parses the file.
 	const {
 		renderStyleDefaultId,
 		renderStyleOptions,
@@ -106,14 +94,23 @@ const App = () => {
 		renderTheme,
 		nativeTag: mainMapViewId,
 	} ) );
-
 	const [renderStyle, setRenderStyle] = useState( renderStyleDefaultId );
 
+	// Update app state defaults, when Mapsforge parsed the style xml and tells us the possibilities.
 	useEffect( () => {
+		// If no renderStyle is set, but Mapsforge just parsed the style xml, and we got a renderStyleDefaultId. Update renderStyle.
 		if ( ! renderStyle && renderStyleDefaultId ) {
 			setRenderStyle( renderStyleDefaultId );
 		}
 
+		// Reset renderStyle to default. If theme changed and prev renderStyle is not an option anymore.
+		if ( renderStyle ) {
+			if ( ! [...renderStyleOptions].map( opt => opt.value ).includes( renderStyle ) ) {
+				setRenderStyle( renderStyleDefaultId );
+			}
+		}
+
+		// If no renderOverlayOptions is set, but Mapsforge just parsed the style xml, and we got the renderStyleOptions. Update renderOverlayOptions.
 		if ( ! renderOverlayOptions.length ) {
 			const renderStyleOptions_ = renderStyleOptions.find( opt => opt.value === renderStyle  );
 			if ( undefined !== renderStyleOptions_ ) {
@@ -126,15 +123,69 @@ const App = () => {
 				setRenderOverlayOptions( newItems );
 			}
 		}
-	}, [renderStyle, renderStyleDefaultId] );
+	}, [renderTheme,renderStyleOptions,renderStyle, renderStyleDefaultId] );
 
+	// Mapping state varNames to their corresponding setter function.
+	const stateFunctions = {
+		mapFilesDir: setMapFilesDir,
+		styleFilesDir: setStyleFilesDir,
+		mapFile: setMapFile,
+		renderOverlays: setRenderOverlays,
+		renderTheme: setRenderTheme,
+		renderStyle: setRenderStyle,
+	};
+
+	// Handle update: Save to settings, then update app state.
+	const handleUpdate = ( varName, valueRaw ) => {
+		let value;
+		switch( varName ) {
+			case 'renderOverlays':
+				value = JSON.stringify( valueRaw );
+				break;
+			default:
+				value = valueRaw
+		};
+		AsyncStorage.setItem( varNameToStoreKey( varName, appName ), value ).then( () => {
+			stateFunctions[varName]( valueRaw );
+		} );
+	};
+
+	// Get settings from store and update app state.
+	const updateStateFromStore = () => {
+		try {
+			AsyncStorage.multiGet( Object.keys( stateFunctions ).map( varName => varNameToStoreKey( varName, appName ) ) ).then( results => {
+				[...results].map( result => {
+					const varName = storeKeyToVarName( result[0], appName );
+					let valid = true;
+					let value;
+					switch( varName ) {
+						case 'renderOverlays':
+							value = JSON.parse( result[1] );
+							valid = Array.isArray( value );
+							break;
+						default:
+							value = result[1]
+					};
+					if ( valid ) {
+						stateFunctions[varName]( value );
+					}
+				} );
+			} );
+		} catch( err ) {
+			console.log( 'debug err', err ); // debug
+		}
+	};
+
+	// Update app store from settings on start.
+	useEffect( () => {
+		updateStateFromStore()
+	}, [appName] );
+
+	// Define just some random locations.
 	const [locations, setLocations] = useState( Array.apply( null, Array( 10 ) ).map( () => [
 		randomNumber( -0.25, 0 ),		// lat
 		randomNumber( -78.6, -78.37 ),	// long
 	] ) );
-
-
-	const { width, height } = useWindowDimensions();
 
 	return (
 		<SafeAreaView style={ style }>
@@ -180,13 +231,13 @@ const App = () => {
 
 					<LiftViewIdStateUp setMainMapViewId={ setMainMapViewId } />
 
-					{ showLayerMapsforge && <LayerMapsforge
+					<LayerMapsforge
 						mapFile={ mapFile }
 						renderTheme={ renderTheme }
 						renderStyle={ renderStyle }
 						renderOverlays={ renderOverlays }
-						cachePersistence={ 0 }
-					/> }
+						// cachePersistence={ 0 }
+					/>
 
 					{/* <Polyline
 						// positions={ locations }
@@ -196,11 +247,10 @@ const App = () => {
 						} }
 					/> */}
 
-					{ showMarkers && [...locations].map( ( latLong, index ) => <Marker
+					{ [...locations].map( ( latLong, index ) => <Marker
 						latLong={ latLong }
 						key={ index }
 						tabDistanceThreshold={ 80 }
-						icon={ icons[iconIndex] }
 						onTab={ res => {
 							console.log( 'debug Marker res', res ); // debug
 						} }
@@ -209,7 +259,6 @@ const App = () => {
 				</MapContainer>
 
 			</View> }
-
 
 
 			<View
@@ -222,36 +271,6 @@ const App = () => {
 				} }
 			>
 
-				<View
-					style={ {
-						flexDirection: 'row',
-						width,
-						justifyContent: 'space-evenly',
-						alignItems: 'center',
-						marginBottom: 10,
-					} }
-				>
-					<Button
-						onPress={ () => {
-							setShowMarkers( ! showMarkers );
-						} }
-						title="Toggle Markers"
-						disabled={ promiseQueueState > 0 }
-					/>
-					<Button
-						onPress={ () => {
-							const newLocations = [...locations].map( coords => [...coords].map( coord => Math.random() > 0.5 ? coord + 0.01 : coord - 0.01 ) );
-							setLocations( newLocations );
-						} }
-						title="random locations"
-						disabled={ promiseQueueState > 0 }
-					/>
-					<Button
-						onPress={ () => setIconIndex( iconIndex + 1 === icons.length ? 0 : iconIndex + 1 ) }
-						title="Change icons"
-						disabled={ promiseQueueState > 0 }
-					/>
-				</View>
 
 				<View
 					style={ {
@@ -263,52 +282,22 @@ const App = () => {
 						marginBottom: 10,
 					} }
 				>
-					<Button
-						onPress={ () => {
-							setShowLayerMapsforge( ! showLayerMapsforge );
-						} }
-						title="Toggle Mapsforge"
-						disabled={ promiseQueueState > 0 }
-					/>
-
-					<Text>{ promiseQueueState > 0 ? 'busy' : 'idle'  }</Text>
 
 					<Button
 						onPress={ () => {
-							promiseQueue.enqueue( () => {
-								MapContainerModule.zoomIn( mainMapViewId );
+							AsyncStorage.multiRemove( Object.keys( stateFunctions ).map( varName => varNameToStoreKey( varName, appName ) ) ).then( () => {
+								updateStateFromStore();
 							} );
 						} }
-						title="+"
-						disabled={ promiseQueueState > 0 }
+						title="Reset store"
 					/>
-					<Button
-						onPress={ () => {
-							promiseQueue.enqueue( () => {
-								MapContainerModule.zoomOut( mainMapViewId );
-							} );
-						} }
-						title="-"
-						disabled={ promiseQueueState > 0 }
-					/>
-				</View>
-
-				<View
-					style={ {
-						...style,
-						flexDirection: 'row',
-						justifyContent: 'space-evenly',
-						alignItems: 'center',
-						width,
-						marginBottom: 10,
-					} }
-				>
 
 					<DirPickerModalControl
 						value={ mapFilesDir }
 						buttonLabel={ 'Map dir' }
 						headerLabel={ 'Map files dir' }
-						onSelect={ dir => setMapFilesDir( dir ) }
+						// onSelect={ dir => setMapFilesDir( dir ) }
+						onSelect={ value => handleUpdate( 'mapFilesDir', value ) }
 						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
 
@@ -316,10 +305,12 @@ const App = () => {
 
 					<FilesFromDirPickerModalControl
 						headerLabel={ 'Map file' }
+						buttonLabelFallback={ 'Map file' }
 						dir={ mapFilesDir }
 						filePattern={ /.*\.map$/ }
 						values={ [mapFile] }
-						onChange={ clickedVal => setMapFile( clickedVal ) }
+						// onChange={ clickedVal => setMapFile( clickedVal ) }
+						onChange={ value => handleUpdate( 'mapFile', value ) }
 						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
 					/>
@@ -341,7 +332,8 @@ const App = () => {
 						value={ styleFilesDir }
 						buttonLabel={ 'Style dir' }
 						headerLabel={ 'Style files dir' }
-						onSelect={ dir => setStyleFilesDir( dir ) }
+						// onSelect={ dir => setStyleFilesDir( dir ) }
+						onSelect={ value => handleUpdate( 'styleFilesDir', value ) }
 						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
 
@@ -349,10 +341,12 @@ const App = () => {
 
 					<FilesFromDirPickerModalControl
 						headerLabel={ 'Style file' }
+						buttonLabelFallback={ 'Style file' }
 						dir={ styleFilesDir }
 						filePattern={ /.*\.xml$/ }
 						values={ [renderTheme] }
-						onChange={ clickedVal => setRenderTheme( clickedVal ) }
+						// onChange={ clickedVal => setRenderTheme( clickedVal ) }
+						onChange={ value => handleUpdate( 'renderTheme', value ) }
 						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
 					/>
@@ -363,7 +357,8 @@ const App = () => {
 						buttonLabelFallback={ 'Flavour' }
 						options={ renderStyleOptions }
 						values={ [renderStyle] }
-						onChange={ clickedVal => setRenderStyle( clickedVal ) }
+						// onChange={ clickedVal => setRenderStyle( clickedVal ) }
+						onChange={ value => handleUpdate( 'renderStyle', value ) }
 						closeOnChange={ false }
 					/>
 
@@ -374,18 +369,18 @@ const App = () => {
 						disabled={ promiseQueueState > 0 || ! renderStyleOptions.length }
 						buttonLabelFallback={ 'test' }
 						options={ renderOverlayOptions }
-						values={ renderOverlays }
+						values={ renderOverlays || [] }
 						onChange={ clickedVal => {
 							const existingIndex = renderOverlays.findIndex( val => val === clickedVal );
 							if ( existingIndex === -1 ) {
-								setRenderOverlays( [
+								handleUpdate( 'renderOverlays', [
 									...renderOverlays,
 									clickedVal,
-								] );
+								] )
 							} else {
 								const newSelectedItems = [...renderOverlays];
 								newSelectedItems.splice( existingIndex, 1 );
-								setRenderOverlays( newSelectedItems );
+								handleUpdate( 'renderOverlays', newSelectedItems );
 							}
 						} }
 						closeOnChange={ false }
@@ -394,6 +389,29 @@ const App = () => {
 				</View>
 
 			</View>
+
+			<View
+				style={ {
+					...style,
+					position: 'absolute',
+					bottom: 0,
+					right: 0,
+				} }
+			>
+				<View
+					style={ {
+						...style,
+						flexDirection: 'row',
+						justifyContent: 'space-evenly',
+						alignItems: 'center',
+						margin: 15,
+					} }
+				>
+					<Text>{ promiseQueueState > 0 ? 'busy' : 'idle'  }</Text>
+				</View>
+			</View>
+
+
 		</SafeAreaView>
 	);
 };

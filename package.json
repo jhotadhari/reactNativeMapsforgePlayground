@@ -10,8 +10,11 @@
     "format": "eslint --fix --config ./eslint.config.js react"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "lodash-es": "^4.17.21",
     "react": "18.2.0",
     "react-native": "0.74.1",
+    "react-native-device-info": "^11.1.0",
     "react-native-mapsforge": "github:jhotadhari/react-native-mapsforge",
     "react-native-root-modal": "^5.0.1"
   },
