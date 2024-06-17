@@ -363,7 +363,7 @@ const App = () => {
 					/>
 
 					<PickerModalControl
-						multiple={ true }
+						hasSelectAll={ true }
 						buttonLabel={ 'options' }
 						headerLabel={ 'Render style options' }
 						disabled={ promiseQueueState > 0 || ! renderStyleOptions.length }
@@ -371,6 +371,10 @@ const App = () => {
 						options={ renderOverlayOptions }
 						values={ renderOverlays || [] }
 						onChange={ clickedVal => {
+							if ( Array.isArray( clickedVal ) ) {
+								handleUpdate( 'renderOverlays', clickedVal );
+								return;
+							}
 							const existingIndex = renderOverlays.findIndex( val => val === clickedVal );
 							if ( existingIndex === -1 ) {
 								handleUpdate( 'renderOverlays', [

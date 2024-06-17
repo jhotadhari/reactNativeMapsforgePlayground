@@ -25,13 +25,17 @@ const PickerModalControl = ( {
 	closeOnChange,
 	headerLabel,
 	itemHeight,
+	hasSelectAll,
 } ) => {
+	values = values || [];
 
 	const [modalVisible, setModalVisible] = useState( false );
 
 	const { height, width } = useWindowDimensions();
 
 	itemHeight = itemHeight || 45;
+
+	const allSelected = [...options].map( opt => opt.value ).sort().join( '' ) == [...values].sort().join( '' );
 
 	return <>
 		<Button
@@ -48,9 +52,28 @@ const PickerModalControl = ( {
 			setModalVisible={ setModalVisible }
 			modalVisible={ modalVisible }
 			headerLabel={ headerLabel }
-			style={ { width: width * ( 2 / 3 ) } }
+			style={ { width: width * 0.8 } }
 		>
-			<FlatList
+
+			{ hasSelectAll && <View style={ {
+				flexDirection: 'row',
+				justifyContent: 'space-between',
+				alignItems: 'center',
+				marginBottom: 10,
+			} }>
+				<Button
+					title={ allSelected ? 'Select none' : 'Select all' }
+					onPress={ e => {
+						e.stopPropagation();
+						onChange( allSelected ? [] : [...options].map( opt => opt.value ) );
+						if ( closeOnChange ) {
+							setModalVisible( false );
+						}
+					} }
+				/>
+			</View> }
+
+			{ options && <FlatList
 				data={ options }
 				style={ { maxHeight: Math.min( height * 0.6, itemHeight * options.length ) } }
 				getItemLayout={ ( data, index ) => ( {
@@ -75,7 +98,7 @@ const PickerModalControl = ( {
 					/>
 				</View> }
 				keyExtractor={ item => item.value }
-			/>
+			/> }
 
 		</ModalWrapper> }
 	</>;
