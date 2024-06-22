@@ -92,6 +92,7 @@ const App = () => {
 	const [mapFile, setMapFile] = useState( null );
 	const [renderOverlays, setRenderOverlays] = useState( [] );
 	const [renderTheme, setRenderTheme] = useState( null );
+	const [demFolderName, setDemFolderName] = useState( '/storage/emulated/0/Download' );
 
 	// Get renderStyleDefaultId, renderStyleOptions from style sheet xml when Mapsforge parses the file.
 	const {
@@ -140,6 +141,7 @@ const App = () => {
 		renderOverlays: setRenderOverlays,
 		renderTheme: setRenderTheme,
 		renderStyle: setRenderStyle,
+		demFolderName: setDemFolderName,
 		tracksDir: setTracksDir,
 	};
 
@@ -244,6 +246,8 @@ const App = () => {
 						renderTheme={ renderTheme }
 						renderStyle={ renderStyle }
 						renderOverlays={ renderOverlays }
+						demFolderName={ demFolderName }
+						hillshadingEnableInterpolationOverlap={ true }
 						cachePersistence={ 1 }
 					/>
 
