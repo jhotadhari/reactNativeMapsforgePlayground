@@ -11,6 +11,7 @@ import PickerModalControl from './PickerModalControl.jsx';
 import useDirInfo from '../compose/useDirInfo';
 
 const FilesFromDirPickerModalControl = ( {
+    hasSelectAll,
     dir,
     filePattern,
     disabled,
@@ -21,6 +22,7 @@ const FilesFromDirPickerModalControl = ( {
 	closeOnChange,
 	headerLabel,
 	itemHeight,
+    sortReverse,
 } ) => {
 
     const { navChildren } = useDirInfo( dir || null );
@@ -33,10 +35,11 @@ const FilesFromDirPickerModalControl = ( {
                 return { value: file.name, label: file.name.split( '/' ).reverse()[0] };
             } )
             : [];
-        setOptions( newOptions );
+        setOptions( sortReverse ? newOptions.reverse() : newOptions );
     }, [navChildren] );
 
 	return <PickerModalControl
+        hasSelectAll={ hasSelectAll }
         options={ options }
         disabled={ disabled }
         buttonLabel={ buttonLabel }

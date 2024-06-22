@@ -71,6 +71,12 @@ const App = () => {
 
 	const [mainMapViewId, setMainMapViewId] = useState( null );
 
+	const [trackFiles, setTrackFiles] = useState( [] );
+
+
+
+
+
 	// The options for the control component.
 	const [renderOverlayOptions, setRenderOverlayOptions] = useState( [] );
 
@@ -82,6 +88,7 @@ const App = () => {
 
 	const [mapFilesDir, setMapFilesDir] = useState(  '/storage/emulated/0/Download' );
 	const [styleFilesDir, setStyleFilesDir] = useState(  '/storage/emulated/0/Download' );
+	const [tracksDir, setTracksDir] = useState( '/storage/emulated/0/Download' );
 	const [mapFile, setMapFile] = useState( null );
 	const [renderOverlays, setRenderOverlays] = useState( [] );
 	const [renderTheme, setRenderTheme] = useState( null );
@@ -133,6 +140,7 @@ const App = () => {
 		renderOverlays: setRenderOverlays,
 		renderTheme: setRenderTheme,
 		renderStyle: setRenderStyle,
+		tracksDir: setTracksDir,
 	};
 
 	// Handle update: Save to settings, then update app state.
@@ -236,25 +244,27 @@ const App = () => {
 						renderTheme={ renderTheme }
 						renderStyle={ renderStyle }
 						renderOverlays={ renderOverlays }
-						// cachePersistence={ 0 }
+						cachePersistence={ 1 }
 					/>
 
-					{/* <Polyline
-						// positions={ locations }
-						file={ '/storage/emulated/0/Documents/orux/tracklogs/2024-06-10 1713__20240610_1713.gpx' }
-						onTab={ res => {
-							console.log( 'debug Polyline res', res ); // debug
-						} }
-					/> */}
+					{ trackFiles && [...trackFiles].map( trackFile => {
+						return <Polyline
+							key={ trackFile }
+							file={ trackFile }
+							onTab={ res => {
+								console.log( 'debug Polyline res', res ); // debug
+							} }
+						/>
+					} ) }
 
-					{ [...locations].map( ( latLong, index ) => <Marker
+					{/* { [...locations].map( ( latLong, index ) => <Marker
 						latLong={ latLong }
 						key={ index }
 						tabDistanceThreshold={ 80 }
 						onTab={ res => {
 							console.log( 'debug Marker res', res ); // debug
 						} }
-					/> ) }
+					/> ) } */}
 
 				</MapContainer>
 
@@ -332,11 +342,9 @@ const App = () => {
 						value={ styleFilesDir }
 						buttonLabel={ 'Style dir' }
 						headerLabel={ 'Style files dir' }
-						// onSelect={ dir => setStyleFilesDir( dir ) }
 						onSelect={ value => handleUpdate( 'styleFilesDir', value ) }
 						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
-
 					/>
 
 					<FilesFromDirPickerModalControl
@@ -345,7 +353,6 @@ const App = () => {
 						dir={ styleFilesDir }
 						filePattern={ /.*\.xml$/ }
 						values={ [renderTheme] }
-						// onChange={ clickedVal => setRenderTheme( clickedVal ) }
 						onChange={ value => handleUpdate( 'renderTheme', value ) }
 						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
@@ -357,7 +364,6 @@ const App = () => {
 						buttonLabelFallback={ 'Flavour' }
 						options={ renderStyleOptions }
 						values={ [renderStyle] }
-						// onChange={ clickedVal => setRenderStyle( clickedVal ) }
 						onChange={ value => handleUpdate( 'renderStyle', value ) }
 						closeOnChange={ false }
 					/>
@@ -392,6 +398,62 @@ const App = () => {
 
 				</View>
 
+				<View
+					style={ {
+						...style,
+						flexDirection: 'row',
+						justifyContent: 'space-evenly',
+						alignItems: 'center',
+						width,
+						marginBottom: 10,
+					} }
+				>
+
+					<DirPickerModalControl
+						value={ tracksDir }
+						buttonLabel={ 'Tracks dir' }
+						headerLabel={ 'Tracks dir' }
+						onSelect={ value => handleUpdate( 'tracksDir', value ) }
+						closeOnChange={ true }
+						disabled={ promiseQueueState > 0 }
+					/>
+
+					<FilesFromDirPickerModalControl
+						hasSelectAll={ true }
+						sortReverse={ true }
+						headerLabel={ 'Tracks' }
+						buttonLabel={ 'Tracks' }
+						dir={ tracksDir }
+						filePattern={ /.*\.gpx$/ }
+						values={ trackFiles }
+						onChange={ value => {
+
+
+							console.log( 'debug value', value ); // debug
+							if ( Array.isArray( value ) ) {
+								setTrackFiles( value )
+								return;
+							}
+
+							const existingIndex = trackFiles.findIndex( val => val === value );
+							if ( existingIndex === -1 ) {
+								setTrackFiles( [
+									...trackFiles,
+									value,
+								] )
+							} else {
+								const newSelectedItems = [...trackFiles];
+								newSelectedItems.splice( existingIndex, 1 );
+								setTrackFiles( newSelectedItems );
+							}
+
+
+						} }
+						// closeOnChange={ true }
+						disabled={ promiseQueueState > 0 }
+					/>
+
+				</View>
 			</View>
 
 			<View
