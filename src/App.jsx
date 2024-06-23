@@ -19,6 +19,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApplicationName } from 'react-native-device-info';
 
+
+
 /**
  * react-native-mapsforge dependencies
  */
@@ -86,8 +88,15 @@ const App = () => {
 		setAppName( getApplicationName() );
 	}, [] );
 
-	const [mapFilesDir, setMapFilesDir] = useState(  '/storage/emulated/0/Download' );
-	const [styleFilesDir, setStyleFilesDir] = useState(  '/storage/emulated/0/Download' );
+
+
+	const [initialZoom,setInitialZoom] = useState( null );
+	const [initialCenter,setInitialCenter] = useState( null );
+
+
+
+	const [mapFilesDir, setMapFilesDir] = useState( '/storage/emulated/0/Download' );
+	const [styleFilesDir, setStyleFilesDir] = useState( '/storage/emulated/0/Download' );
 	const [tracksDir, setTracksDir] = useState( '/storage/emulated/0/Download' );
 	const [mapFile, setMapFile] = useState( null );
 	const [renderOverlays, setRenderOverlays] = useState( [] );
@@ -135,6 +144,8 @@ const App = () => {
 
 	// Mapping state varNames to their corresponding setter function.
 	const stateFunctions = {
+		initialZoom: setInitialZoom,
+		initialCenter: setInitialCenter,
 		mapFilesDir: setMapFilesDir,
 		styleFilesDir: setStyleFilesDir,
 		mapFile: setMapFile,
@@ -146,40 +157,66 @@ const App = () => {
 	};
 
 	// Handle update: Save to settings, then update app state.
-	const handleUpdate = ( varName, valueRaw ) => {
+	const handleUpdate = ( varName, valueRaw, shouldUpdateState ) => {
+		shouldUpdateState = false === shouldUpdateState ? false : true;
 		let value;
 		switch( varName ) {
+			case 'initialCenter':
 			case 'renderOverlays':
 				value = JSON.stringify( valueRaw );
+				break;
+			case 'initialZoom':
+				value = value && value.toString ? value.toString() : value;
 				break;
 			default:
 				value = valueRaw
 		};
-		AsyncStorage.setItem( varNameToStoreKey( varName, appName ), value ).then( () => {
-			stateFunctions[varName]( valueRaw );
-		} );
+		if ( null !== value && undefined !== value ) {
+			AsyncStorage.setItem( varNameToStoreKey( varName, appName ), value ).then( () => {
+				if ( shouldUpdateState ) {
+					stateFunctions[varName]( valueRaw );
+				}
+			} );
+		}
 	};
 
 	// Get settings from store and update app state.
 	const updateStateFromStore = () => {
 		try {
 			AsyncStorage.multiGet( Object.keys( stateFunctions ).map( varName => varNameToStoreKey( varName, appName ) ) ).then( results => {
-				[...results].map( result => {
-					const varName = storeKeyToVarName( result[0], appName );
-					let valid = true;
-					let value;
-					switch( varName ) {
-						case 'renderOverlays':
-							value = JSON.parse( result[1] );
-							valid = Array.isArray( value );
-							break;
-						default:
-							value = result[1]
-					};
-					if ( valid ) {
-						stateFunctions[varName]( value );
-					}
-				} );
+				const storeHasValues = [...results].reduce( ( acc, res ) => acc ? acc : null !== res[1], false );
+				if ( storeHasValues ) {
+					[...results].map( result => {
+						const varName = storeKeyToVarName( result[0], appName );
+						let valid = true;
+						let value;
+						switch( varName ) {
+							case 'initialCenter':
+							case 'renderOverlays':
+								value = JSON.parse( result[1] );
+								valid = Array.isArray( value );
+								break;
+							case 'initialZoom':
+								valid = parseInt( value, 10 ) == value;
+								value = parseInt( value, 10 );
+								break;
+							default:
+								value = result[1]
+						};
+
+						if ( ! valid && 'initialCenter' === varName && ! initialCenter ) {
+							value = [-0.10, -78.48];	// Default initialCenter
+							valid = true;
+						}
+						if ( ! valid && 'initialZoom' === varName && ! initialZoom ) {
+							value = 13;					// Default initialZoom
+							valid = true;
+						}
+						if ( valid ) {
+							stateFunctions[varName]( value );
+						}
+					} );
+				};
 			} );
 		} catch( err ) {
 			console.log( 'debug err', err ); // debug
@@ -190,12 +227,6 @@ const App = () => {
 	useEffect( () => {
 		updateStateFromStore()
 	}, [appName] );
-
-	// Define just some random locations.
-	const [locations, setLocations] = useState( Array.apply( null, Array( 10 ) ).map( () => [
-		randomNumber( -0.25, 0 ),		// lat
-		randomNumber( -78.6, -78.37 ),	// long
-	] ) );
 
 	return (
 		<SafeAreaView style={ style }>
@@ -229,14 +260,21 @@ const App = () => {
 				</View>
 			</View> }
 
-			{ permissionsOk && <View>
+			{ permissionsOk && initialCenter && initialZoom && <View>
 
 				<MapContainer
 					height={ height }
-					center={ [-0.10, -78.48] }
-					zoom={ 13 }
+					center={ initialCenter }
+					zoom={ initialZoom }
 					// minZoom={ 12 }
 					// maxZoom={ 18 }
+					onPause={ result => {
+						handleUpdate( 'initialCenter', result.center, false );
+						handleUpdate( 'initialZoom', result.zoom, false );
+					} }
+					// onResume={ result => {
+					// 	console.log( 'debug lifecycle event onResume', result );
+					// } }
 				>
 
 					<LiftViewIdStateUp setMainMapViewId={ setMainMapViewId } />
@@ -260,15 +298,6 @@ const App = () => {
 							} }
 						/>
 					} ) }
-
-					{/* { [...locations].map( ( latLong, index ) => <Marker
-						latLong={ latLong }
-						key={ index }
-						tabDistanceThreshold={ 80 }
-						onTab={ res => {
-							console.log( 'debug Marker res', res ); // debug
-						} }
-					/> ) } */}
 
 				</MapContainer>
 
@@ -454,6 +483,15 @@ const App = () => {
 
 						} }
 						// closeOnChange={ true }
+						disabled={ promiseQueueState > 0 }
+					/>
+
+					<DirPickerModalControl
+						value={ demFolderName }
+						buttonLabel={ 'dem dir' }
+						headerLabel={ 'dem dir' }
+						onSelect={ value => handleUpdate( 'demFolderName', value ) }
+						closeOnChange={ true }
 						disabled={ promiseQueueState > 0 }
 					/>
 
