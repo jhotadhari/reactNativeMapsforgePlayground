@@ -13,13 +13,10 @@ import {
 	Text,
 	useColorScheme,
 	useWindowDimensions,
-	PixelRatio,
 	View,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApplicationName } from 'react-native-device-info';
-
-
 
 /**
  * react-native-mapsforge dependencies
@@ -27,12 +24,9 @@ import { getApplicationName } from 'react-native-device-info';
 import {
 	MapContainer,
 	LayerMapsforge,
-	Marker,
 	Polyline,
 	usePromiseQueueState,
-	promiseQueue,
 	useRenderStyleOptions,
-	nativeMapModules,
 } from 'react-native-mapsforge';
 
 /**
@@ -42,9 +36,8 @@ import DirPickerModalControl from './components/DirPickerModalControl.jsx';
 import FilesFromDirPickerModalControl from './components/FilesFromDirPickerModalControl.jsx';
 import PickerModalControl from './components/PickerModalControl.jsx';
 import usePermissionsOk from './compose/usePermissionsOk.jsx';
-import { randomNumber } from './utils';
-
-
+import useVolumeKeyZoom from './compose/useVolumeKeyZoom';
+// import { randomNumber } from './utils';
 
 const LiftViewIdStateUp = ( { mapViewNativeTag, setMainMapViewId } ) => {
 	useEffect( () => {
@@ -112,6 +105,8 @@ const App = () => {
 		nativeTag: mainMapViewId,
 	} ) );
 	const [renderStyle, setRenderStyle] = useState( renderStyleDefaultId );
+
+	useVolumeKeyZoom( mainMapViewId );
 
 	// Update app state defaults, when Mapsforge parsed the style xml and tells us the possibilities.
 	useEffect( () => {
@@ -227,6 +222,7 @@ const App = () => {
 	useEffect( () => {
 		updateStateFromStore()
 	}, [appName] );
+
 
 	return (
 		<SafeAreaView style={ style }>
