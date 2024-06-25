@@ -20,6 +20,7 @@ public class MyReactNativePackage implements ReactPackage {
     public List<NativeModule> createNativeModules( ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 	 	modules.add(new PermissionModule(reactContext));
+	 	modules.add(new BRouterModule(reactContext));
 	 	modules.add(new FsModule(reactContext));
         return modules;
     }
