@@ -27,6 +27,7 @@ import {
 	Polyline,
 	usePromiseQueueState,
 	useRenderStyleOptions,
+	Marker,
 } from 'react-native-mapsforge';
 
 /**
@@ -34,17 +35,12 @@ import {
  */
 import DirPickerModalControl from './components/DirPickerModalControl.jsx';
 import FilesFromDirPickerModalControl from './components/FilesFromDirPickerModalControl.jsx';
+import RouterUi from './components/RouterUi.jsx';
+import Center from './components/Center.jsx';
 import PickerModalControl from './components/PickerModalControl.jsx';
 import usePermissionsOk from './compose/usePermissionsOk.jsx';
 import useVolumeKeyZoom from './compose/useVolumeKeyZoom';
-// import { randomNumber } from './utils';
-
-const LiftViewIdStateUp = ( { mapViewNativeTag, setMainMapViewId } ) => {
-	useEffect( () => {
-		setMainMapViewId( mapViewNativeTag );
-	}, [mapViewNativeTag] );
-	return null;
-};
+import useRouting from './compose/useRouting';
 
 const varNameToStoreKey = ( varName, appName ) => '@' + appName + '_' + varName;
 const storeKeyToVarName = ( storeKey, appName ) => storeKey.replace( '@' + appName + '_', '' );
@@ -69,7 +65,7 @@ const App = () => {
 	const [trackFiles, setTrackFiles] = useState( [] );
 
 
-
+	const [segments,setSegments] = useRouting();
 
 
 	// The options for the control component.
@@ -262,6 +258,8 @@ const App = () => {
 					height={ height }
 					center={ initialCenter }
 					zoom={ initialZoom }
+					mapViewNativeTag={ mainMapViewId }
+					setMapViewNativeTag={ setMainMapViewId }
 					// minZoom={ 12 }
 					// maxZoom={ 18 }
 					onPause={ result => {
@@ -272,8 +270,6 @@ const App = () => {
 					// 	console.log( 'debug lifecycle event onResume', result );
 					// } }
 				>
-
-					<LiftViewIdStateUp setMainMapViewId={ setMainMapViewId } />
 
 					<LayerMapsforge
 						mapFile={ mapFile }
@@ -289,16 +285,38 @@ const App = () => {
 						return <Polyline
 							key={ trackFile }
 							file={ trackFile }
-							onTab={ res => {
-								console.log( 'debug Polyline res', res ); // debug
-							} }
+							// onTab={ res => {
+							// 	console.log( 'debug Polyline res', res ); // debug
+							// } }
 						/>
 					} ) }
+
+					{ [...segments].map( ( segment, index ) => {
+						if ( segment.positions && segment.positions.length > 0 ) {
+							return  <Polyline
+								key={ index }
+								positions={ segment.positions }
+							/>;
+						} else if ( segment.start ) {
+							return <Marker
+								key={ index }
+								latLong={ segment.start }
+								// onTab,
+								// tabDistanceThreshold,
+								// icon,
+							/>;
+						}
+					} )}
 
 				</MapContainer>
 
 			</View> }
 
+			<Center
+				style={ style }
+				width={ width }
+				height={ height }
+			/>
 
 			<View
 				style={ {
@@ -309,7 +327,6 @@ const App = () => {
 					width,
 				} }
 			>
-
 
 				<View
 					style={ {
@@ -493,6 +510,13 @@ const App = () => {
 
 				</View>
 			</View>
+
+			<RouterUi
+				style={ style }
+				nativeTag={ mainMapViewId }
+				segments={ segments }
+				setSegments={ setSegments }
+			/>
 
 			<View
 				style={ {
